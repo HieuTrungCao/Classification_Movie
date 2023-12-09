@@ -1,0 +1,1 @@
+python train.py --path_data './data/dataset'

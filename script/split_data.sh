@@ -1,0 +1,1 @@
+python .\split_data.py --path_data 'data\dataset' 
