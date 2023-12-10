@@ -16,10 +16,14 @@ from models import Model
 from datasets import get_dataframe
 from datasets import MyDataset
 from metrics import f1_scores
+from utils import print_log
 
 def reduce_Lr(optimizer):
     for param_group in optimizer.param_groups:
         param_group['lr'] = param_group["lr"] / 100
+
+def count_parameters(model, rg):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad == rg)
 
 def train(args, logger):
 
@@ -36,7 +40,7 @@ def train(args, logger):
     """
     Load datasets
     """
-    logger.info("Loading datasets!")
+    print_log(logger, "Loading datasets!")
     print("Loading datasets!")
     movies_train = get_dataframe(os.path.join(args.path_data, "movies_train.csv"))
     movies_valid = get_dataframe(os.path.join(args.path_data, "movies_valid.csv"))
@@ -50,10 +54,10 @@ def train(args, logger):
     valid_dataloader = DataLoader(valid_datasets, batch_size=args.batch_size)
     test_dataloader = DataLoader(test_datasets, batch_size=args.batch_size)
     
-    logger.info("Loaded dataset!")
-    logger.info("Training samples: {:5d}".format(len(train_datasets)))
-    logger.info("Validate samples: {:5d}".format(len(valid_datasets)))
-    logger.info("Testing samples: {:5d}".format(len(test_datasets)))
+    print_log(logger, "Loaded dataset!")
+    print_log(logger, "Training samples: {:5d}".format(len(train_datasets)))
+    print_log(logger, "Validate samples: {:5d}".format(len(valid_datasets)))
+    print_log(logger, "Testing samples: {:5d}".format(len(test_datasets)))
 
     print("Loaded dataset!")
     print("Training samples: {:5d}".format(len(train_datasets)))
@@ -62,12 +66,15 @@ def train(args, logger):
     """
     Model
     """
-    logger.info("Loading model")
-    print("Loading model")
+    print_log(logger, "Loading model")
     model  = Model(len(genre2idx), use_title=args.use_title).to(device)
-    logger.info("Loaded model!")
-    print("Loaded model!")
-
+    training_params = count_parameters(model, rg=True)
+    Non_trainable_params = count_parameters(model, rg=False)
+    total = training_params + Non_trainable_params
+    print_log(logger, "Loaded model!")
+    print_log(logger, "Trainable: {:15d}".format(training_params))
+    print_log(logger, "Non-Trainable: {:15d}".format(Non_trainable_params))
+    print_log(logger, "Total: {:15d}".format(total))
     """
     Loss, Metric, Optimizer
     """
@@ -76,8 +83,7 @@ def train(args, logger):
     
     start_epoch = 1
     if args.check_point is not None:
-        logger.info("Load checkpoint " + args.check_point)
-        print("Load checkpoint " + args.check_point)
+        print_log(logger, "Load checkpoint " + args.check_point)
         
         checkpoint = torch.load(args.check_point)
         model.load_state_dict(checkpoint['model_state_dict'])
@@ -85,30 +91,22 @@ def train(args, logger):
         epoch = checkpoint['epoch']
         start_epoch = epoch + 1
 
-        logger.info("Load checkpoint done!")
-        logger.info("Start training from " + args.check_point)
-        print("Load checkpoint done!")
-        print("Start training from " + args.check_point)
+        print_log(logger, "Load checkpoint done!")
+        print_log(logger, "Start training from " + args.check_point)
 
-    logger.info("Training...........")
-    print("Training...........")
+    print_log(logger, "Training...........")
     for e in range(start_epoch, args.epoch + 1):
         model.train()
         t_i = time.time()
         for i, (img, title, genre) in enumerate(train_dataloader):
             optimizer.zero_grad()
             img = img.to(device)
-            if title is not None:
+            if args.use_title:
                 title = title.to(device)
             genre = genre.to(device)
 
             out = model(img, title)
             loss = critical(out, genre)
-
-            # img = img.to("cpu")
-            # if title is not None:
-            #     title = title.to("cpu")
-            # genre = genre.to("cpu")
 
             loss.backward()
             optimizer.step()
@@ -116,13 +114,9 @@ def train(args, logger):
             reduce_Lr(optimizer)
 
             if i % args.iter_print == 0 and i > 0:
-                logger.info("|[TRAIN] epoch : {:5d}| {:5d}/{:5d} batches| time: {:8.2f}s| loss: {:8.3f}|".format(
+                print_log(logger, "|[TRAIN] epoch : {:5d}| {:5d}/{:5d} batches| time: {:8.2f}s| loss: {:8.3f}|".format(
                     e, i, len(train_dataloader), time.time() - t_i, loss.item()
                 ))
-
-                print("|[TRAIN] epoch : {:5d}| {:5d}/{:5d} batches| time: {:8.2f}s| loss: {:8.3f}|".format(
-                    e, i, len(train_dataloader), time.time() - t_i, loss.item()
-                )) 
                 t_i = time.time()
 
         t_v = time.time()
@@ -145,10 +139,7 @@ def train(args, logger):
                 p += _p
                 r += r
                 l += loss.item()
-        logger.info("|[VALID] epoch : {:5d}| time: {:8.2f}s| loss: {:8.3f}| precission: {:5.3f}| recall: {:5.3f}| f1_score: {:5.3f}|".format(
-                    e, time.time() - t_i, l / len(valid_dataloader), p / len(valid_dataloader), r / len(valid_dataloader), f / len(valid_dataloader) 
-                ))
-        print("|[VALID] epoch : {:5d}| time: {:8.2f}s| loss: {:8.3f}| precission: {:5.3f}| recall: {:5.3f}| f1_score: {:5.3f}|".format(
+        print_log(logger, "|[VALID] epoch : {:5d}| time: {:8.2f}s| loss: {:8.3f}| precission: {:5.3f}| recall: {:5.3f}| f1_score: {:5.3f}|".format(
                     e, time.time() - t_i, l / len(valid_dataloader), p / len(valid_dataloader), r / len(valid_dataloader), f / len(valid_dataloader) 
                 ))
         save_path = "epoch_" + str(e)
@@ -193,7 +184,7 @@ if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
     t = time.time()
     train(args, logger)
-    logger.info("Total time: {:8.3}s".format(time.time() - t))
+    print_log(logger, "Total time: {:8.3}s".format(time.time() - t))
     
 
 
