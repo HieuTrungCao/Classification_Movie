@@ -184,7 +184,7 @@ if __name__ == "__main__":
     path_logging = os.path.join("./logging", name_logging)
     # Create and configure logger
     logging.basicConfig(filename=path_logging,
-                    format='%(asctime)s %(message)s',
+                    format='%(levelname)s:%(name)s:%(message)s',
                     filemode='w')
     # Creating an object
     logger = logging.getLogger()
