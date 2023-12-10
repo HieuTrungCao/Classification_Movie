@@ -184,11 +184,11 @@ if __name__ == "__main__":
     path_logging = os.path.join("./logging", name_logging)
     # Create and configure logger
     logging.basicConfig(filename=path_logging,
-                    format='%(levelname)s:%(name)s:%(message)s',
+                    format='%(message)s',
                     filemode='w')
     # Creating an object
     logger = logging.getLogger()
-    logger.setLevel(logging.BASIC_FORMAT)
+    logger.setLevel(logging.DEBUG)
     t = time.time()
     train(args, logger)
     logger.info("Total time: {:8.3}s".format(time.time() - t))
