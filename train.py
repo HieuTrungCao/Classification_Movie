@@ -105,10 +105,10 @@ def train(args, logger):
             if title is not None:
                 title = title.to("cpu")
             genre = genre.to("cpu")
-            
+
             loss.backward()
-            optimizer.step()
             optimizer.zero_grad()
+            optimizer.step()
             
             if i % args.iter_print == 0 and i > 0:
                 logger.info("|[TRAIN] epoch : {:5d}| {:5d}/{:5d} batches| time: {:8.2f}s| loss: {:8.3f}|".format(
