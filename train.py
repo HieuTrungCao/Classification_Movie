@@ -178,6 +178,9 @@ if __name__ == "__main__":
     if not os.path.exists("./logging"):
         os.mkdir("./logging")
     
+    if not os.path.exists(args.save_path):
+        os.mkdir(args.save_path)
+        
     now = datetime.now()
     name_logging = "train" + now.strftime("%m_%d_%Y_%H_%M_%S") + ".log"
 
