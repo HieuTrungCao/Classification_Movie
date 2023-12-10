@@ -17,6 +17,10 @@ from datasets import get_dataframe
 from datasets import MyDataset
 from metrics import f1_scores
 
+def reduce_Lr(optimizer):
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = param_group["lr"] / 100
+
 def train(args, logger):
 
     device = "cpu" 
@@ -90,8 +94,8 @@ def train(args, logger):
     print("Training...........")
     for e in range(start_epoch, args.epoch + 1):
         model.train()
+        t_i = time.time()
         for i, (img, title, genre) in enumerate(train_dataloader):
-            t_i = time.time()
 
             img = img.to(device)
             if title is not None:
@@ -110,6 +114,8 @@ def train(args, logger):
             optimizer.zero_grad()
             optimizer.step()
 
+            reduce_Lr(optimizer)
+
             if i % args.iter_print == 0 and i > 0:
                 logger.info("|[TRAIN] epoch : {:5d}| {:5d}/{:5d} batches| time: {:8.2f}s| loss: {:8.3f}|".format(
                     e, i, len(train_dataloader), time.time() - t_i, loss.item()
@@ -118,6 +124,7 @@ def train(args, logger):
                 print("|[TRAIN] epoch : {:5d}| {:5d}/{:5d} batches| time: {:8.2f}s| loss: {:8.3f}|".format(
                     e, i, len(train_dataloader), time.time() - t_i, loss.item()
                 )) 
+                t_i = time.time()
 
         t_v = time.time()
         p = 0
@@ -177,12 +184,13 @@ if __name__ == "__main__":
     path_logging = os.path.join("./logging", name_logging)
     # Create and configure logger
     logging.basicConfig(filename=path_logging,
-                    format='%(asctime)s %(message)s',
                     filemode='w')
     # Creating an object
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.BASIC_FORMAT)
+    t = time.time()
     train(args, logger)
+    logger.info("Total time: {:8.3}s".format(time.time() - t))
     
 
 

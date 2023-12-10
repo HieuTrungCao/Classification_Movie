@@ -8,6 +8,10 @@ def recall(pred, genre, eps=1e-5):
             sum += 1
     if sum == 0:
         sum += eps
+    
+    if genre.sum().item() == 0:
+        return eps
+    
     return sum / genre.sum().item()
 
 def precision(pred, genre, eps=1e-5):
@@ -17,6 +21,10 @@ def precision(pred, genre, eps=1e-5):
             sum += 1
     if sum == 0:
         sum += eps
+    
+    if pred.sum().item() == 0:
+        return eps
+    
     return sum / pred.sum().item()
 
 def f1_score(pred, genre, eps=1e-5):
