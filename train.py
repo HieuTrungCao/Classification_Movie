@@ -96,7 +96,7 @@ def train(args, logger):
         model.train()
         t_i = time.time()
         for i, (img, title, genre) in enumerate(train_dataloader):
-
+            optimizer.zero_grad()
             img = img.to(device)
             if title is not None:
                 title = title.to(device)
@@ -111,7 +111,6 @@ def train(args, logger):
             # genre = genre.to("cpu")
 
             loss.backward()
-            optimizer.zero_grad()
             optimizer.step()
 
             reduce_Lr(optimizer)
@@ -180,7 +179,7 @@ if __name__ == "__main__":
     
     if not os.path.exists(args.save_path):
         os.mkdir(args.save_path)
-        
+
     now = datetime.now()
     name_logging = "train" + now.strftime("%m_%d_%Y_%H_%M_%S") + ".log"
 
