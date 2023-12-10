@@ -41,7 +41,7 @@ def train(args, logger):
     Load datasets
     """
     print_log(logger, "Loading datasets!")
-    print("Loading datasets!")
+ 
     movies_train = get_dataframe(os.path.join(args.path_data, "movies_train.csv"))
     movies_valid = get_dataframe(os.path.join(args.path_data, "movies_valid.csv"))
     movies_test = get_dataframe(os.path.join(args.path_data, "movies_test.csv"))
@@ -59,10 +59,6 @@ def train(args, logger):
     print_log(logger, "Validate samples: {:5d}".format(len(valid_datasets)))
     print_log(logger, "Testing samples: {:5d}".format(len(test_datasets)))
 
-    print("Loaded dataset!")
-    print("Training samples: {:5d}".format(len(train_datasets)))
-    print("Validate samples: {:5d}".format(len(valid_datasets)))
-    print("Testing samples: {:5d}".format(len(test_datasets)))
     """
     Model
     """
