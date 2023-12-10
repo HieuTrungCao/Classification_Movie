@@ -24,7 +24,7 @@ class Block(nn.Module):
 class Retnet(nn.Module):
     def __init__(self, hidden_state):
         super(Retnet, self).__init__()
-        self.layers = [2, 2, 3, 2]
+        self.layers = [1, 1, 2, 1]
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)

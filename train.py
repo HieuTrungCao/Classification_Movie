@@ -136,7 +136,7 @@ def train(args, logger):
                 r += r
                 l += loss.item()
         print_log(logger, "|[VALID] epoch : {:5d}| time: {:8.2f}s| loss: {:8.3f}| precission: {:5.3f}| recall: {:5.3f}| f1_score: {:5.3f}|".format(
-                    e, time.time() - t_i, l / len(valid_dataloader), p / len(valid_dataloader), r / len(valid_dataloader), f / len(valid_dataloader) 
+                    e, time.time() - t_v, l / len(valid_dataloader), p / len(valid_dataloader), r / len(valid_dataloader), f / len(valid_dataloader) 
                 ))
         save_path = "epoch_" + str(e)
         torch.save({
