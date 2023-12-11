@@ -105,7 +105,7 @@ def train(args, logger):
             loss = critical(out, genre)
 
             loss.backward()
-            optimizer.step()
+            # optimizer.step()
 
             reduce_Lr(optimizer)
 
