@@ -75,7 +75,7 @@ def train(args, logger):
     Loss, Metric, Optimizer
     """
     critical  = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), args.lr)
+    optimizer = optim.SGD(model.parameters(), args.lr)
     
     start_epoch = 1
     if args.check_point is not None:
@@ -105,7 +105,7 @@ def train(args, logger):
             loss = critical(out, genre)
 
             loss.backward()
-            # optimizer.step()
+            optimizer.step()
 
             reduce_Lr(optimizer)
 
