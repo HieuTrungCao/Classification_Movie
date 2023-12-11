@@ -107,14 +107,12 @@ def train(args, logger):
             loss.backward()
             optimizer.step()
 
-            reduce_Lr(optimizer)
-
             if i % args.iter_print == 0 and i > 0:
                 print_log(logger, "|[TRAIN] epoch : {:5d}| {:5d}/{:5d} batches| time: {:8.2f}s| loss: {:8.3f}|".format(
                     e, i, len(train_dataloader), time.time() - t_i, loss.item()
                 ))
                 t_i = time.time()
-
+        reduce_Lr(optimizer)
         t_v = time.time()
         p = 0
         r = 0
