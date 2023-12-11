@@ -20,7 +20,7 @@ from utils import print_log
 
 def reduce_Lr(optimizer):
     for param_group in optimizer.param_groups:
-        param_group['lr'] = param_group["lr"] / 100
+        print(param_group['lr'])
 
 def count_parameters(model, rg):
     return sum(p.numel() for p in model.parameters() if p.requires_grad == rg)
@@ -107,7 +107,7 @@ def train(args, logger):
             loss.backward()
             optimizer.step()
 
-            # reduce_Lr(optimizer)
+            reduce_Lr(optimizer)
 
             if i % args.iter_print == 0 and i > 0:
                 print_log(logger, "|[TRAIN] epoch : {:5d}| {:5d}/{:5d} batches| time: {:8.2f}s| loss: {:8.3f}|".format(
