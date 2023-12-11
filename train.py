@@ -19,6 +19,7 @@ from metrics import f1_scores
 from utils import print_log
 
 def reduce_Lr(optimizer):
+    print(optimizer.param_groups)
     for param_group in optimizer.param_groups:
         print(param_group['lr'])
 
@@ -144,11 +145,10 @@ def train(args, logger):
             }, os.path.join(args.save_path, save_path))
 
 if __name__ == "__main__":
-
-    random.seed(1000)
     
     parse = argparse.ArgumentParser()
     parse.add_argument("--lr", type=float, default=0.01, help="Enter learning rate")
+    parse.add_argument("--seed", type=int, default=1000, help="Enter seed")
     parse.add_argument("--batch_size", type=int, default=32, help="Enter batch size")
     parse.add_argument("--epoch", type=int, default=30, help="Enter epoch")    
     parse.add_argument("--use_title", type=bool, default=False, help="Use title True or False")
@@ -159,6 +159,10 @@ if __name__ == "__main__":
 
     args = parse.parse_args()
     
+    np.random.seed(args.seed)
+    random.seed(args.seed)
+    torch.manual_seed(args.seed)
+
     if not os.path.exists("./logging"):
         os.mkdir("./logging")
     
