@@ -19,9 +19,9 @@ from metrics import f1_scores
 from utils import print_log
 
 def reduce_Lr(optimizer):
-    print(optimizer.param_groups)
+    # print(optimizer.param_groups)
     for param_group in optimizer.param_groups:
-        print(param_group['lr'])
+        param_group['lr'] = param_group['lr'] / 10
 
 def count_parameters(model, rg):
     return sum(p.numel() for p in model.parameters() if p.requires_grad == rg)
@@ -113,7 +113,7 @@ def train(args, logger):
                     e, i, len(train_dataloader), time.time() - t_i, loss.item()
                 ))
                 t_i = time.time()
-        reduce_Lr(optimizer)
+        # reduce_Lr(optimizer)
         t_v = time.time()
         p = 0
         r = 0
