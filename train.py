@@ -102,12 +102,12 @@ def train(args, logger):
             genre = genre.to(device)
 
             out = model(img, title)
-            loss = critical(out, genre)
+            loss = critical(torch.sigmoid(out), genre)
 
             loss.backward()
             optimizer.step()
 
-            reduce_Lr(optimizer)
+            # reduce_Lr(optimizer)
 
             if i % args.iter_print == 0 and i > 0:
                 print_log(logger, "|[TRAIN] epoch : {:5d}| {:5d}/{:5d} batches| time: {:8.2f}s| loss: {:8.3f}|".format(
@@ -129,7 +129,7 @@ def train(args, logger):
                 genre = genre.to(device)
 
                 out = model(img, title)
-                loss = critical(out, genre)
+                loss = critical(torch.sigmoid(out), genre)
                 f1, _p, r = f1_scores(out, genre)
                 f += f1
                 p += _p
