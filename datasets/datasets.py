@@ -6,10 +6,12 @@ import numpy as np
 from torch.utils.data import Dataset
 
 class MyDataset(Dataset):
-    def __init__(self, data, genre2idx):
+    def __init__(self, data, genre2idx, transform=None):
         super(MyDataset, self).__init__()
         self.data = data
         self.genre2idx = genre2idx
+        self.transform = transform
+        self.count = 0
     
     def __len__(self):
         return len(self.data)
@@ -21,10 +23,14 @@ class MyDataset(Dataset):
         # preprocess img
         if os.path.exists(img_path):
             img = cv2.imread(img_path)
+            self.count += 1
         else:
             img = np.random.rand(256,256,3)
         img = cv2.resize(img, (256,256))
         img_tensor = torch.from_numpy(img.transpose(2,0,1)).float()
+
+        if self.transform is not None:
+            img_tensor = self.transform(img_tensor)
 
         # preprocess label
         genre_vector = np.zeros(len(self.genre2idx))
