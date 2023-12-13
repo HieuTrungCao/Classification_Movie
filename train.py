@@ -6,6 +6,7 @@ import os
 import torch
 import logging
 import time 
+import wandb
 
 from datetime import datetime
 from torch.utils.data import DataLoader
@@ -19,10 +20,14 @@ from datasets import MyDataset
 from metrics import f1_scores
 from utils import print_log
 
-def reduce_Lr(optimizer):
+def reduce_Lr(optimizer, is_reduce=False):
     # print(optimizer.param_groups)
+    lr = 0
     for param_group in optimizer.param_groups:
-        param_group['lr'] = param_group['lr'] / 10
+        lr = param_group["lr"]
+        if is_reduce:
+            param_group['lr'] = param_group['lr'] / 10
+    return lr
 
 def count_parameters(model, rg):
     return sum(p.numel() for p in model.parameters() if p.requires_grad == rg)
@@ -84,7 +89,10 @@ def train(args, logger):
     Loss, Metric, Optimizer
     """
     critical  = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), args.lr)
+    optimizer = optimizer = optim.Adam(
+                        filter(lambda p: p.requires_grad, model.parameters()),
+                        lr=args.lr,
+                    )
     
     start_epoch = 1
     if args.check_point is not None:
@@ -121,7 +129,11 @@ def train(args, logger):
                     e, i, len(train_dataloader), time.time() - t_i, loss.item()
                 ))
                 t_i = time.time()
-        # reduce_Lr(optimizer)
+                wandb.log({"train loss": loss})
+
+        lr = reduce_Lr(optimizer, args.is_reduce_lr)
+        wandb.log({"Lr": lr})
+        
         t_v = time.time()
         p = 0
         r = 0
@@ -145,6 +157,12 @@ def train(args, logger):
         print_log(logger, "|[VALID] epoch : {:5d}| time: {:8.2f}s| loss: {:8.3f}| precission: {:5.3f}| recall: {:5.3f}| f1_score: {:5.3f}|".format(
                     e, time.time() - t_v, l / len(valid_dataloader), p / len(valid_dataloader), r / len(valid_dataloader), f / len(valid_dataloader) 
                 ))
+        
+        wandb.log({"valid loss": l/len(valid_dataloader)})
+        wandb.log({"precission": p / len(valid_dataloader)})
+        wandb.log({"recal": r / len(valid_dataloader)})
+        wandb.log({"f1_score": f / len(valid_dataloader)})
+        
         save_path = "epoch_" + str(e)
         torch.save({
             'epoch': e,
@@ -164,12 +182,25 @@ if __name__ == "__main__":
     parse.add_argument("--iter_print", type=int, default=50, help="Enter inter log and print")
     parse.add_argument("--save_path", type=str, default="./models", help="Enter forder to save model")
     parse.add_argument("--check_point", type=str, default=None, help="Enter checkpoint will start")
+    parse.add_argument("--is_reduce_lr", type=bool, default=False, help="Do you want to reduce lr each epoch")
 
     args = parse.parse_args()
     
     np.random.seed(args.seed)
     random.seed(args.seed)
     torch.manual_seed(args.seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(args.seed)
+        
+    # 1. Start a W&B Run
+    wandb.login()
+    run = wandb.init(
+        project="classification-movie",
+        notes="My first experiment",
+        tags=["baseline", "paper1"],
+    )
+    
+    wandb.config = {"epochs": args.epoch, "learning_rate": args.lr, "batch_size": args.batch_size}
 
     if not os.path.exists("./logging"):
         os.mkdir("./logging")
@@ -190,6 +221,7 @@ if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
     t = time.time()
     train(args, logger)
+    wandb.finish()
     print_log(logger, "Total time: {:8.3}s".format(time.time() - t))
     
 
