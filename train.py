@@ -78,7 +78,8 @@ def train(args, logger):
     """
     print_log(logger, "Loading model")
     model  = Model(len(genre2idx), use_title=args.use_title)
-    model = model.to(device)
+    model.to(device)
+
     training_params = count_parameters(model, rg=True)
     Non_trainable_params = count_parameters(model, rg=False)
     total = training_params + Non_trainable_params
@@ -90,7 +91,7 @@ def train(args, logger):
     Loss, Metric, Optimizer
     """
     critical  = nn.CrossEntropyLoss()
-    optimizer = optimizer = optim.SGD(
+    optimizer = optimizer = optim.Adam(
                         filter(lambda p: p.requires_grad, model.parameters()),
                         lr=args.lr,
                     )
