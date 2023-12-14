@@ -6,31 +6,25 @@ def recall(pred, genre, eps=1e-5):
     for p, g in zip(pred, genre):
         if p == g and g == 1.0:
             sum += 1
-    if sum == 0:
-        sum += eps
     
-    if genre.sum().item() == 0:
-        return eps
-    
-    return sum / genre.sum().item()
+    return sum / (genre.sum().item() + eps)
 
 def precision(pred, genre, eps=1e-5):
     sum = 0
     for p, g in zip(pred, genre):
         if p == g and g == 1.0:
             sum += 1
-    if sum == 0:
-        sum += eps
     
-    if pred.sum().item() == 0:
-        return eps
-    
-    return sum / pred.sum().item()
+    return sum / (pred.sum().item() + eps)
 
 def f1_score(pred, genre, eps=1e-5):
     r = recall(pred, genre)
     p = precision(pred, genre)
-    return 2 / (1/p + 1/r), p, r
+
+    if r == 0 and p == 0:
+        return 0, p, r
+    
+    return 2 * p * r/ (p + r), p, r
 
 def f1_scores(preds, genres, threshold=0.7, eps=1e-5):
     preds = preds > threshold

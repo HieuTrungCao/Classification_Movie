@@ -77,7 +77,8 @@ def train(args, logger):
     Model
     """
     print_log(logger, "Loading model")
-    model  = Model(len(genre2idx), use_title=args.use_title).to(device)
+    model  = Model(len(genre2idx), use_title=args.use_title)
+    model = model.to(device)
     training_params = count_parameters(model, rg=True)
     Non_trainable_params = count_parameters(model, rg=False)
     total = training_params + Non_trainable_params
@@ -149,7 +150,7 @@ def train(args, logger):
 
                 out = model(img, title)
                 loss = critical(torch.sigmoid(out), genre)
-                f1, _p, r = f1_scores(out, genre)
+                f1, _p, r = f1_scores(out, genre, args.threshold)
                 f += f1
                 p += _p
                 r += r
@@ -183,6 +184,7 @@ if __name__ == "__main__":
     parse.add_argument("--save_path", type=str, default="./models", help="Enter forder to save model")
     parse.add_argument("--check_point", type=str, default=None, help="Enter checkpoint will start")
     parse.add_argument("--is_reduce_lr", type=bool, default=False, help="Do you want to reduce lr each epoch")
+    parse.add_argument("--threshold", type=float, default=0.7, help="Enter thredhold to classification")
 
     args = parse.parse_args()
     
