@@ -90,7 +90,7 @@ def train(args, logger):
     Loss, Metric, Optimizer
     """
     critical  = nn.CrossEntropyLoss()
-    optimizer = optimizer = optim.Adam(
+    optimizer = optimizer = optim.SGD(
                         filter(lambda p: p.requires_grad, model.parameters()),
                         lr=args.lr,
                     )
