@@ -78,7 +78,7 @@ def train(args, logger):
     """
     print_log(logger, "Loading model")
     model  = Model(len(genre2idx), use_title=args.use_title)
-    model.to(device)
+    # model.to(device)
 
     training_params = count_parameters(model, rg=True)
     Non_trainable_params = count_parameters(model, rg=False)
@@ -109,6 +109,7 @@ def train(args, logger):
         print_log(logger, "Load checkpoint done!")
         print_log(logger, "Start training from " + args.check_point)
 
+    model.to(device)
     print_log(logger, "Training...........")
     for e in range(start_epoch, args.epoch + 1):
         model.train()
