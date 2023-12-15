@@ -2,11 +2,11 @@ import torch.nn as nn
 import torch
 
 from .lstm import LSTM
-from .retnet import Retnet
-from .test_model import BaseModel
+from .retnet import ResNet
+
 
 class Model(nn.Module):
-    def __init__(self, num_class, hidden_state_img = 64, use_title=False, hidden_state_title = None):
+    def __init__(self, num_class, hidden_state_img = 512, use_title=False, hidden_state_title = None):
         super(Model, self).__init__()
 
         self.input_dim = hidden_state_img
@@ -16,8 +16,8 @@ class Model(nn.Module):
         if use_title:
             self.lstm = LSTM()
             self.input_dim += hidden_state_title
-        # self.retnet = Retnet(hidden_state_img)
-        self.img_model = BaseModel()
+        self.resnet = ResNet(hidden_state_img)
+        
         self.linear = nn.Linear(self.input_dim, num_class)
 
     def forward(self, img, title):

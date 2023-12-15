@@ -115,15 +115,14 @@ def train(args, logger):
         model.train()
         t_i = time.time()
         for i, (img, title, genre) in enumerate(train_dataloader):
-            optimizer.zero_grad()
             img = img.to(device)
             if args.use_title:
                 title = title.to(device)
             genre = genre.to(device)
 
             out = model(img, title)
-            loss = critical(torch.sigmoid(out), genre)
-
+            loss = critical(out, genre)
+            optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
@@ -142,8 +141,10 @@ def train(args, logger):
         r = 0
         f = 0
         l = 0
+
+        model.eval()
         for i, (img, title, genre) in enumerate(valid_dataloader):
-            model.eval()
+            
             with torch.no_grad():
                 img = img.to(device)
                 if args.use_title:
@@ -151,7 +152,7 @@ def train(args, logger):
                 genre = genre.to(device)
 
                 out = model(img, title)
-                loss = critical(torch.sigmoid(out), genre)
+                loss = critical(out, genre)
                 f1, _p, r = f1_scores(out, genre, args.threshold)
                 f += f1
                 p += _p
@@ -187,7 +188,7 @@ if __name__ == "__main__":
     parse.add_argument("--check_point", type=str, default=None, help="Enter checkpoint will start")
     parse.add_argument("--is_reduce_lr", type=bool, default=False, help="Do you want to reduce lr each epoch")
     parse.add_argument("--threshold", type=float, default=0.7, help="Enter thredhold to classification")
-
+    parse.add_argument("--notes", type=str, default="My first experiment")
     args = parse.parse_args()
     
     np.random.seed(args.seed)
@@ -200,7 +201,7 @@ if __name__ == "__main__":
     wandb.login()
     run = wandb.init(
         project="classification-movie",
-        notes="My first experiment",
+        notes=args.notes,
         tags=["baseline", "paper1"],
     )
     
