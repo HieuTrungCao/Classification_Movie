@@ -116,10 +116,10 @@ def train(args, logger):
         t_i = time.time()
         for i, (img, title, genre) in enumerate(train_dataloader):
             optimizer.zero_grad()
-            img = img.to(device)
+            img.to(device)
             if args.use_title:
-                title = title.to(device)
-            genre = genre.to(device)
+                title.to(device)
+            genre.to(device)
 
             out = model(img, title)
             loss = critical(torch.sigmoid(out), genre)
@@ -145,10 +145,10 @@ def train(args, logger):
         for i, (img, title, genre) in enumerate(valid_dataloader):
             model.eval()
             with torch.no_grad():
-                img = img.to(device)
+                img.to(device)
                 if args.use_title:
-                    title = title.to(device)
-                genre = genre.to(device)
+                    title.to(device)
+                genre.to(device)
 
                 out = model(img, title)
                 loss = critical(torch.sigmoid(out), genre)
