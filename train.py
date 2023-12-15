@@ -113,6 +113,7 @@ def train(args, logger):
         model.train()
         t_i = time.time()
         for i, (img, title, genre) in enumerate(train_dataloader):
+            
             img = img.to(device)
             if args.use_title:
                 title = title.to(device)
@@ -143,19 +144,19 @@ def train(args, logger):
         model.eval()
         for i, (img, title, genre) in enumerate(valid_dataloader):
             
-            with torch.no_grad():
-                img = img.to(device)
-                if args.use_title:
-                    title = title.to(device)
-                genre = genre.to(device)
+            img = img.to(device)
+            if args.use_title:
+                title = title.to(device)
+            genre = genre.to(device)
 
-                out = model(img, title)
-                loss = critical(out, genre)
-                f1, _p, r = f1_scores(out, genre, args.threshold)
-                f += f1
-                p += _p
-                r += r
-                l += loss.item()
+            out = model(img, title)
+            loss = critical(out, genre)
+            f1, _p, r = f1_scores(out, genre, args.threshold)
+            f += f1
+            p += _p
+            r += r
+            l += loss.item()
+
         print_log(logger, "|[VALID] epoch : {:5d}| time: {:8.2f}s| loss: {:8.3f}| precission: {:5.3f}| recall: {:5.3f}| f1_score: {:5.3f}|".format(
                     e, time.time() - t_v, l / len(valid_dataloader), p / len(valid_dataloader), r / len(valid_dataloader), f / len(valid_dataloader) 
                 ))
