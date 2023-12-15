@@ -52,17 +52,10 @@ def train(args, logger):
     movies_train = get_dataframe(os.path.join(args.path_data, "movies_train.csv"))
     movies_valid = get_dataframe(os.path.join(args.path_data, "movies_valid.csv"))
     movies_test = get_dataframe(os.path.join(args.path_data, "movies_test.csv"))
-
-    mean = np.array([0.4914, 0.4822, 0.4465])
-    std = np.array([0.2470, 0.2435, 0.2616])
-
-    transform = transforms.Compose([
-        transforms.Normalize(mean, std)
-    ])
     
-    train_datasets = MyDataset(movies_train, genre2idx, transform)
-    valid_datasets = MyDataset(movies_valid, genre2idx, transform)
-    test_datasets = MyDataset(movies_test, genre2idx, transform)
+    train_datasets = MyDataset(movies_train, genre2idx)
+    valid_datasets = MyDataset(movies_valid, genre2idx)
+    test_datasets = MyDataset(movies_test, genre2idx)
 
     train_dataloader = DataLoader(train_datasets, batch_size=args.batch_size)
     valid_dataloader = DataLoader(valid_datasets, batch_size=args.batch_size)
