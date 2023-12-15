@@ -16,7 +16,7 @@ class Model(nn.Module):
         if use_title:
             self.lstm = LSTM()
             self.input_dim += hidden_state_title
-        self.resnet = ResNet(hidden_state_img)
+        self.img_model = ResNet(hidden_state_img)
         
         self.linear = nn.Linear(self.input_dim, num_class)
 
