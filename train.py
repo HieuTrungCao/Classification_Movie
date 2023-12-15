@@ -7,6 +7,7 @@ import torch
 import logging
 import time 
 import wandb
+import math
 
 from datetime import datetime
 from torch.utils.data import DataLoader
@@ -26,7 +27,7 @@ def reduce_Lr(optimizer, is_reduce=False):
     for param_group in optimizer.param_groups:
         lr = param_group["lr"]
         if is_reduce:
-            param_group['lr'] = param_group['lr'] / 10
+            param_group['lr'] = param_group['lr'] / math.sqrt(5)
     return lr
 
 def count_parameters(model, rg):
