@@ -80,14 +80,6 @@ def train(args, logger):
     print_log(logger, "Trainable: {:15d}".format(training_params))
     print_log(logger, "Non-Trainable: {:15d}".format(Non_trainable_params))
     print_log(logger, "Total: {:15d}".format(total))
-    """
-    Loss, Metric, Optimizer
-    """
-    critical  = nn.CrossEntropyLoss()
-    optimizer = optimizer = optim.Adam(
-                        filter(lambda p: p.requires_grad, model.parameters()),
-                        lr=args.lr,
-                    )
     
     start_epoch = 1
     if args.check_point is not None:
@@ -103,6 +95,19 @@ def train(args, logger):
         print_log(logger, "Start training from " + args.check_point)
 
     model.to(device)
+
+    """
+    Loss, Metric, Optimizer
+    """
+    critical  = nn.CrossEntropyLoss()
+    # optimizer = optimizer = optim.Adam(
+    #                     filter(lambda p: p.requires_grad, model.parameters()),
+    #                     lr=args.lr,
+    #                 )
+    optimizer = torch.optim.SGD(model.parameters(), args.lr,
+                                momentum=args.momentum,
+                                weight_decay=args.decay)
+    
     print_log(logger, "Training...........")
     for e in range(start_epoch, args.epoch + 1):
         model.train()
@@ -182,6 +187,8 @@ if __name__ == "__main__":
     parse.add_argument("--is_reduce_lr", type=bool, default=False, help="Do you want to reduce lr each epoch")
     parse.add_argument("--threshold", type=float, default=0.7, help="Enter thredhold to classification")
     parse.add_argument("--notes", type=str, default="My first experiment")
+    parse.add_argument("--momentum", type=float, default=0.9)
+    parse.add_argument("--decay", type=float, default=0.0005)
     args = parse.parse_args()
     
     np.random.seed(args.seed)
