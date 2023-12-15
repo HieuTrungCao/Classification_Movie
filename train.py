@@ -27,7 +27,7 @@ def reduce_Lr(optimizer, is_reduce=False):
     for param_group in optimizer.param_groups:
         lr = param_group["lr"]
         if is_reduce:
-            param_group['lr'] = param_group['lr'] / math.sqrt(5)
+            param_group['lr'] = param_group['lr'] * (1 - 0.02)
     return lr
 
 def count_parameters(model, rg):
