@@ -121,7 +121,7 @@ def train(args, logger):
             genre = genre.to(device)
 
             out = model(img, title)
-            loss = critical(nn.Sigmoid(out), genre)
+            loss = critical(torch.sigmoid(out), genre)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -151,7 +151,7 @@ def train(args, logger):
             genre = genre.to(device)
 
             out = model(img, title)
-            loss = critical(nn.Sigmoid(out), genre)
+            loss = critical(torch.sigmoid(out), genre)
             f1, _p, r = f1_scores(out, genre, args.threshold)
             f += f1
             p += _p
