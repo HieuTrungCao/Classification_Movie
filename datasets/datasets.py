@@ -27,7 +27,7 @@ class MyDataset(Dataset):
             img = np.random.rand(256,256,3)
         img = cv2.resize(img, (256,256))
         img_tensor = torch.from_numpy(img.transpose(2,0,1)).float()
-
+        img_tensor = img_tensor / 255.0
         # preprocess label
         genre_vector = np.zeros(len(self.genre2idx))
 

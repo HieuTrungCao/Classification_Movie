@@ -100,7 +100,7 @@ def train(args, logger):
     """
     Loss, Metric, Optimizer
     """
-    critical  = nn.CrossEntropyLoss()
+    critical  = nn.BCELoss()
     # optimizer = optimizer = optim.Adam(
     #                     filter(lambda p: p.requires_grad, model.parameters()),
     #                     lr=args.lr,
@@ -121,7 +121,7 @@ def train(args, logger):
             genre = genre.to(device)
 
             out = model(img, title)
-            loss = critical(out, genre)
+            loss = critical(nn.Sigmoid(out), genre)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -151,7 +151,7 @@ def train(args, logger):
             genre = genre.to(device)
 
             out = model(img, title)
-            loss = critical(out, genre)
+            loss = critical(nn.Sigmoid(out), genre)
             f1, _p, r = f1_scores(out, genre, args.threshold)
             f += f1
             p += _p
