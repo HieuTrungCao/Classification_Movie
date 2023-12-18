@@ -121,6 +121,7 @@ def train(args, logger):
     for e in range(start_epoch, args.epoch + 1):
         model.train()
         t_i = time.time()
+        l = 0
         for i, (img, title, genre) in enumerate(train_dataloader):
             
             img = img.to(device)
@@ -133,13 +134,13 @@ def train(args, logger):
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-
+            l += loss.item()
             if i % args.iter_print == 0 and i > 0:
                 print_log(logger, "|[TRAIN] epoch : {:5d}| {:5d}/{:5d} batches| time: {:8.2f}s| loss: {:8.3f}|".format(
                     e, i, len(train_dataloader), time.time() - t_i, loss.item()
                 ))
                 t_i = time.time()
-                wandb.log({"train loss": loss})
+        wandb.log({"train loss": l/len(train_dataloader)})
 
         lr = reduce_Lr(optimizer, args.is_reduce_lr)
         wandb.log({"Lr": lr})
