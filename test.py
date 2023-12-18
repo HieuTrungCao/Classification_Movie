@@ -23,17 +23,17 @@ from metrics import f1_scores
 from utils import print_log
 
 
-def get_preds(preds, genres, outs, genre, thredhold, genre_all):
+def get_preds(preds, genres, outs, genre, threshold, genre_all):
     for o, g in zip(outs, genre):
         p = ""
         for i, v in enumerate(o):
-            if v >= thredhold:
+            if v >= threshold:
                 p = p + genre_all[i] + "|"
         preds.append(p)
 
         g_s = ""
         for i, v in enumerate(g):
-            if v >= thredhold:
+            if v >= threshold:
                 g_s = g_s + genre_all[i] + "|"
         genres.append(g_s)
 
@@ -83,7 +83,7 @@ def test(args):
         p += _p
         r += r
 
-        get_preds(preds, genres, torch.sigmoid(out), genre, args.thredhold, genre_all)
+        get_preds(preds, genres, torch.sigmoid(out), genre, args.threshold, genre_all)
 
     print("|[TEST]| time: {:8.2f}s| precission: {:5.3f}| recall: {:5.3f}| f1_score: {:5.3f}|".format(
                     time.time() - t, p / len(test_dataloader), r / len(test_dataloader), f / len(test_dataloader) 
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     parse.add_argument("--model", type=str, help="Enter model")
     parse.add_argument("--path_data", type=str, default="./data/dataset", help="Enter path_data")
     parse.add_argument("--batch_size", type=int, default=16, help="Enter batch_size")
-    parse.add_argument("--thredhold", type=float, default=0.7, help="Enter thredhold")
+    parse.add_argument("--threshold", type=float, default=0.7, help="Enter threshold")
     parse.add_argument("--save_result", type=str, default="/content/result.csv")
     parse.add_argument("--use_title", type=bool, default=False)
     
