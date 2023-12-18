@@ -2,6 +2,7 @@ import torch.nn as nn
 import math
 import torch.utils.model_zoo as model_zoo
 
+from collections import OrderedDict
 def conv3x3(in_planes, out_planes, stride=1):
     "3x3 convolution with padding"
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
@@ -61,7 +62,7 @@ class ResNet(nn.Module):
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
         self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
         self.avgpool = nn.AvgPool2d(7, stride=1)
-        self.cls = nn.Linear(512 * block.expansion * block.expansion, hidden_state_img)
+        self.cls = nn.Linear(512 * block.expansion, hidden_state_img)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -104,3 +105,34 @@ class ResNet(nn.Module):
         cls = self.cls(feature)
 
         return cls
+
+def remove_module_dict(state_dict):
+  new_state_dict = OrderedDict()
+  for k, v in state_dict.items():
+    name = k[7:] # remove `module.`
+    new_state_dict[name] = v
+  return new_state_dict
+
+def load_weight_from_dict(model, weight_state_dict, param_pair=None, remove_prefix=True):
+  if remove_prefix: weight_state_dict = remove_module_dict(weight_state_dict)
+  all_parameter = model.state_dict()
+  all_weights   = []
+  finetuned_layer, random_initial_layer = [], []
+  for key, value in all_parameter.items():
+    if param_pair is not None and key in param_pair:
+      all_weights.append((key, weight_state_dict[ param_pair[key] ]))
+    elif key in weight_state_dict:
+      all_weights.append((key, weight_state_dict[key]))
+      finetuned_layer.append(key)
+    else:
+      all_weights.append((key, value))
+      random_initial_layer.append(key)
+  all_weights = OrderedDict(all_weights)
+  model.load_state_dict(all_weights)
+
+def resnet34(hidden_state_img, pretrained=True):
+  model = ResNet(hidden_state_img)
+  if pretrained:
+    weights = model_zoo.load_url('https://download.pytorch.org/models/resnet34-333f7ec4.pth')
+    load_weight_from_dict(model, weights, None, False)
+  return model

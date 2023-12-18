@@ -71,7 +71,7 @@ def train(args, logger):
     Model
     """
     print_log(logger, "Loading model")
-    model  = Model(len(genre2idx), use_title=args.use_title)
+    model  = Model(len(genre2idx), use_title=args.use_title, pretrained=args.pretrained)
     # model.to(device)
 
     training_params = count_parameters(model, rg=True)
@@ -105,9 +105,7 @@ def train(args, logger):
     #                     filter(lambda p: p.requires_grad, model.parameters()),
     #                     lr=args.lr,
     #                 )
-    optimizer = torch.optim.SGD(model.parameters(), args.lr,
-                                momentum=args.momentum,
-                                weight_decay=args.decay)
+    optimizer = torch.optim.Adam(model.parameters(), args.lr)
     
     print_log(logger, "Training...........")
     for e in range(start_epoch, args.epoch + 1):
@@ -191,6 +189,7 @@ if __name__ == "__main__":
     parse.add_argument("--notes", type=str, default="My first experiment")
     parse.add_argument("--momentum", type=float, default=0.9)
     parse.add_argument("--decay", type=float, default=0.0005)
+    parse.add_argument("--pretrained", type=bool, default=True)
     args = parse.parse_args()
     
     np.random.seed(args.seed)
