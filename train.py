@@ -150,7 +150,7 @@ def train(args, logger):
 
             out = model(img, title)
             loss = critical(out, genre)
-            f1, _p, r = f1_scores(out, genre, args.threshold)
+            f1, _p, r = f1_scores(torch.sigmoid(out), genre, args.threshold)
             f += f1
             p += _p
             r += r
