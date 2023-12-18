@@ -100,7 +100,7 @@ def train(args, logger):
     """
     Loss, Metric, Optimizer
     """
-    critical  = nn.BCEWithLogitsLoss()
+    critical  = nn.CrossEntropyLoss()
     # optimizer = optimizer = optim.Adam(
     #                     filter(lambda p: p.requires_grad, model.parameters()),
     #                     lr=args.lr,
@@ -175,7 +175,7 @@ def train(args, logger):
 if __name__ == "__main__":
     
     parse = argparse.ArgumentParser()
-    parse.add_argument("--lr", type=float, default=0.01, help="Enter learning rate")
+    parse.add_argument("--lr", type=float, default=0.0001, help="Enter learning rate")
     parse.add_argument("--seed", type=int, default=1000, help="Enter seed")
     parse.add_argument("--batch_size", type=int, default=32, help="Enter batch size")
     parse.add_argument("--epoch", type=int, default=30, help="Enter epoch")    
