@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch
 
 from .lstm import LSTM
-from .resnet import resnet34
+from .resnet import resnet50
 
 
 class Model(nn.Module):
@@ -16,7 +16,7 @@ class Model(nn.Module):
         if use_title:
             self.lstm = LSTM()
             self.input_dim += hidden_state_title
-        self.img_model = resnet34(hidden_state_img, pretrained=pretrained)
+        self.img_model = resnet50(hidden_state_img, pretrained=pretrained)
         
         self.linear = nn.Linear(self.input_dim, num_class)
 
