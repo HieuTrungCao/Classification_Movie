@@ -49,7 +49,7 @@ def test(args):
     
     genre2idx = {genre:idx for idx, genre in enumerate(genre_all)}
 
-    movies_valid = get_dataframe(os.path.join(args.path_data, "movies_valid.csv"))
+    movies_valid = get_dataframe(os.path.join(args.path_data, "movies_test.csv"))
 
     test_datasets = MyDataset(movies_valid, genre2idx)
     test_dataloader = DataLoader(test_datasets, batch_size=args.batch_size)
