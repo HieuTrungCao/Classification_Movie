@@ -103,6 +103,7 @@ if __name__ == "__main__":
     parse.add_argument("--batch_size", type=int, default=16, help="Enter batch_size")
     parse.add_argument("--thredhold", type=float, default=0.7, help="Enter thredhold")
     parse.add_argument("--save_result", type=str, default="/content/result.csv")
+    parse.add_argument("--use_title", type=bool, default=False)
     
     args = parse.parse_args()
 
