@@ -53,7 +53,7 @@ def test(args):
     test_datasets = MyDataset(movies_valid, genre2idx)
     test_dataloader = DataLoader(test_datasets, batch_size=args.batch_size)
 
-    model  = Model(len(genre2idx), use_title=args.use_title, pretrained=args.pretrained)
+    model  = Model(len(genre2idx), use_title=args.use_title)
     # model.to(device)
         
     checkpoint = torch.load(args.model)
