@@ -13,12 +13,13 @@ from datetime import datetime
 from torch.utils.data import DataLoader
 from torch import optim
 import torchvision.transforms as transforms
+from torchmetrics.classification import MultilabelF1Score, MultilabelRecall, MultilabelPrecision
 
 # from src.models.retnet import Retnet
 from models import Model
 from datasets import get_dataframe
 from datasets import MyDataset
-from metrics import f1_scores
+# from metrics import f1_scores
 from utils import print_log
 
 def reduce_Lr(optimizer, is_reduce=False):
@@ -106,6 +107,13 @@ def train(args, logger):
     #                     lr=args.lr,
     #                 )
     optimizer = torch.optim.Adam(model.parameters(), args.lr)
+
+    f1_scores = MultilabelF1Score(num_labels=len(genre_all), threshold=args.threshold)
+    f1_scores = f1_scores.to(device)
+    recall_scores = MultilabelRecall(num_labels=len(genre_all), threshold=args.threshold)
+    recall_scores = recall_scores.to(device)
+    precision_scores = MultilabelPrecision(num_labels=len(genre_all), threshold=args.threshold)
+    precision_scores = precision_scores.to(device)
     
     print_log(logger, "Training...........")
     for e in range(start_epoch, args.epoch + 1):
@@ -150,7 +158,9 @@ def train(args, logger):
 
             out = model(img, title)
             loss = critical(out, genre)
-            f1, _p, r = f1_scores(torch.sigmoid(out), genre, args.threshold)
+            f1 = f1_scores(out, genre).item()
+            _p = precision_scores(out, genre).item()
+            r = recall_scores(out, genre).item()
             f += f1
             p += _p
             r += r

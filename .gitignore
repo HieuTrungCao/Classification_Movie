@@ -2,3 +2,6 @@
 data/
 logging
 __pycache__
+result.csv
+test_metric.py
+visualize_data/

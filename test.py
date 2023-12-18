@@ -14,12 +14,13 @@ from datetime import datetime
 from torch.utils.data import DataLoader
 from torch import optim
 import torchvision.transforms as transforms
+from torchmetrics.classification import MultilabelF1Score, MultilabelRecall, MultilabelPrecision
 
 # from src.models.retnet import Retnet
 from models import Model
 from datasets import get_dataframe
 from datasets import MyDataset
-from metrics import f1_scores
+# from metrics import f1_scores
 from utils import print_log
 
 
@@ -62,6 +63,14 @@ def test(args):
     model.to(device)
     
     model.eval()
+
+    f1_scores = MultilabelF1Score(num_labels=len(genre_all), threshold=args.threshold)
+    f1_scores = f1_scores.to(device)
+    recall_scores = MultilabelRecall(num_labels=len(genre_all), threshold=args.threshold)
+    recall_scores = recall_scores.to(device)
+    precision_scores = MultilabelPrecision(num_labels=len(genre_all), threshold=args.threshold)
+    precision_scores = precision_scores.to(device)
+
     f = 0
     p = 0
     r = 0
@@ -78,7 +87,9 @@ def test(args):
         genre = genre.to(device)
 
         out = model(img, title)
-        f1, _p, r = f1_scores(torch.sigmoid(out), genre, args.threshold)
+        f1 = f1_scores(out, genre).item()
+        _p = precision_scores(out, genre).item()
+        r = recall_scores(out, genre).item()
         f += f1
         p += _p
         r += r
