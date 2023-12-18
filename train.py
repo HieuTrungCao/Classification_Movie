@@ -60,8 +60,8 @@ def train(args, logger):
     test_datasets = MyDataset(movies_test, genre2idx)
 
     train_dataloader = DataLoader(train_datasets, batch_size=args.batch_size)
-    valid_dataloader = DataLoader(valid_datasets, batch_size=args.batch_size)
-    test_dataloader = DataLoader(test_datasets, batch_size=args.batch_size)
+    valid_dataloader = DataLoader(valid_datasets, batch_size=args.batch_size_valid)
+    # test_dataloader = DataLoader(test_datasets, batch_size=args.batch_size)
     
     print_log(logger, "Loaded dataset!")
     print_log(logger, "Training samples: {:5d}".format(len(train_datasets)))
@@ -191,6 +191,7 @@ if __name__ == "__main__":
     parse.add_argument("--lr", type=float, default=0.0001, help="Enter learning rate")
     parse.add_argument("--seed", type=int, default=1000, help="Enter seed")
     parse.add_argument("--batch_size", type=int, default=32, help="Enter batch size")
+    parse.add_argument("--batch_size_valid", type=int, default=16, help="Enter batch size")
     parse.add_argument("--epoch", type=int, default=30, help="Enter epoch")    
     parse.add_argument("--use_title", type=bool, default=False, help="Use title True or False")
     parse.add_argument("--path_data", type=str, help="Enter path_data")
