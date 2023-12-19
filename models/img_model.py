@@ -10,7 +10,7 @@ class ImgModel(nn.Module):
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.conv2 = nn.Conv2d(64, 128, kernel_size=7, stride=2, padding=3)
         self.avg = nn.AvgPool2d(3, stride=1)
-        self.fc = nn.Linear(128 * 59 * 59, self.hidden_state_img)
+        self.fc = nn.Linear(128 * 54 * 54, self.hidden_state_img)
 
     def forward(self, img):
         img = self.conv1(img)
