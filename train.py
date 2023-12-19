@@ -62,8 +62,8 @@ def train(args, logger):
     valid_datasets = MyDataset(movies_valid, genre2idx)
     test_datasets = MyDataset(movies_test, genre2idx)
 
-    train_dataloader = DataLoader(train_datasets, batch_size=args.batch_size)
-    valid_dataloader = DataLoader(valid_datasets, batch_size=args.batch_size_valid)
+    train_dataloader = DataLoader(train_datasets, batch_size=args.batch_size, shuffle=True)
+    valid_dataloader = DataLoader(valid_datasets, batch_size=args.batch_size_valid, shuffle=True)
     # test_dataloader = DataLoader(test_datasets, batch_size=args.batch_size)
     
     print_log(logger, "Loaded dataset!")
