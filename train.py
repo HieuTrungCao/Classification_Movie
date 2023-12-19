@@ -77,7 +77,7 @@ def train(args, logger):
     print_log(logger, "Loading model")
     model  = Model(len(genre2idx), use_title=args.use_title, pretrained=args.pretrained)
     # model.to(device)
-
+    print_log(logger, model)
     training_params = count_parameters(model, rg=True)
     Non_trainable_params = count_parameters(model, rg=False)
     total = training_params + Non_trainable_params
@@ -104,11 +104,12 @@ def train(args, logger):
     """
     Loss, Metric, Optimizer
     """
-    critical  = nn.BCEWithLogitsLoss()
+    class_weights = None
     if args.weighted:
         weights = [7.381294964028777, 3.375, 23.318181818181817, 4.580357142857143, 5.796610169491525, 1.3553500660501983, 13.864864864864865, 5.4866310160427805, 34.2, 14.25, 3.320388349514563, 1.0, 22.8, 12.36144578313253, 3.1666666666666665, 14.869565217391305, 10.46938775510204, 6.2560975609756095]
         class_weights = torch.FloatTensor(weights).cuda()
-        critical  = nn.BCEWithLogitsLoss(weight=class_weights)
+        print_log(logger, "Use weighted loss")
+    critical  = nn.BCEWithLogitsLoss(weight=class_weights)
     # optimizer = optimizer = optim.Adam(
     #                     filter(lambda p: p.requires_grad, model.parameters()),
     #                     lr=args.lr,
@@ -209,7 +210,7 @@ if __name__ == "__main__":
     parse.add_argument("--momentum", type=float, default=0.9)
     parse.add_argument("--decay", type=float, default=0.0005)
     parse.add_argument("--pretrained", type=bool, default=True)
-    parse.add_argument("--weighted", type=bool, default=True)
+    parse.add_argument("--weighted", type=bool, default=False)
     args = parse.parse_args()
     
     np.random.seed(args.seed)
