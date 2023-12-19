@@ -77,6 +77,9 @@ def train(args, logger):
     print_log(logger, "Loading model")
     model  = Model(len(genre2idx), use_title=args.use_title, pretrained=args.pretrained)
     # model.to(device)
+    if args.pretrained:
+        print_log(logger, "Use pretrained")
+        
     print_log(logger, model)
     training_params = count_parameters(model, rg=True)
     Non_trainable_params = count_parameters(model, rg=False)
