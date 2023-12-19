@@ -104,11 +104,11 @@ def train(args, logger):
     """
     Loss, Metric, Optimizer
     """
-    critical  = nn.CrossEntropyLoss()
+    critical  = nn.BCEWithLogitsLoss()
     if args.weighted:
         weights = [7.381294964028777, 3.375, 23.318181818181817, 4.580357142857143, 5.796610169491525, 1.3553500660501983, 13.864864864864865, 5.4866310160427805, 34.2, 14.25, 3.320388349514563, 1.0, 22.8, 12.36144578313253, 3.1666666666666665, 14.869565217391305, 10.46938775510204, 6.2560975609756095]
         class_weights = torch.FloatTensor(weights).cuda()
-        critical  = nn.CrossEntropyLoss(weight=class_weights)
+        critical  = nn.BCEWithLogitsLoss(weight=class_weights)
     # optimizer = optimizer = optim.Adam(
     #                     filter(lambda p: p.requires_grad, model.parameters()),
     #                     lr=args.lr,
