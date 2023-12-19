@@ -130,7 +130,7 @@ def load_weight_from_dict(model, weight_state_dict, param_pair=None, remove_pref
   all_weights = OrderedDict(all_weights)
   model.load_state_dict(all_weights)
 
-def resnet50(hidden_state_img, pretrained=True):
+def resnet50(hidden_state_img, pretrained):
   model = ResNet(hidden_state_img)
   if pretrained:
     weights = model_zoo.load_url('https://download.pytorch.org/models/resnet50-19c8e357.pth')

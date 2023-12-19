@@ -6,7 +6,7 @@ from .resnet import resnet50
 from .img_model import ImgModel
 
 class Model(nn.Module):
-    def __init__(self, num_class, hidden_state_img = 512, use_title=False, hidden_state_title = None, pretrained=True):
+    def __init__(self, num_class, pretrained, hidden_state_img = 512, use_title=False, hidden_state_title = None):
         super(Model, self).__init__()
 
         self.use_title = use_title
@@ -17,7 +17,8 @@ class Model(nn.Module):
             self.input_dim += hidden_state_title
             self.linear = nn.Linear(self.input_dim, num_class)
         else:
-            self.img_model = ImgModel(num_class)
+            # self.img_model = ImgModel(num_class)
+            self.img_model = resnet50(num_class, pretrained)
         
     def forward(self, img, title):
         
