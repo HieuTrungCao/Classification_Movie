@@ -8,6 +8,7 @@ import logging
 import time 
 import wandb
 import math
+import pandas as pd
 
 from datetime import datetime
 from torch.utils.data import DataLoader
@@ -54,7 +55,9 @@ def train(args, logger):
     movies_train = get_dataframe(os.path.join(args.path_data, "movies_train.csv"))
     movies_valid = get_dataframe(os.path.join(args.path_data, "movies_valid.csv"))
     movies_test = get_dataframe(os.path.join(args.path_data, "movies_test.csv"))
-    
+    movies_train = pd.concat([movies_train, movies_valid], axis=0)
+    movies_valid = movies_test
+
     train_datasets = MyDataset(movies_train, genre2idx)
     valid_datasets = MyDataset(movies_valid, genre2idx)
     test_datasets = MyDataset(movies_test, genre2idx)
