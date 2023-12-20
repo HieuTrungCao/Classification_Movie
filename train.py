@@ -110,8 +110,8 @@ def train(args, logger):
     class_weights = None
     if args.weighted:
         weights = [6, 1, 20, 1, 1, 1, 10, 1, 30, 10, 1, 1.0, 20, 10, 1, 10, 10, 1.5]
-        weights = weights / max(weights)
         class_weights = torch.FloatTensor(weights).cuda()
+        class_weights = class_weights / max(class_weights)
         print_log(logger, "Use weighted loss")
     critical  = nn.BCEWithLogitsLoss(weight=class_weights, reduction="sum")
  
