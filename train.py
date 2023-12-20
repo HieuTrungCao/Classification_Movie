@@ -109,14 +109,12 @@ def train(args, logger):
     """
     class_weights = None
     if args.weighted:
-        weights = [7.381294964028777, 3.375, 23.318181818181817, 4.580357142857143, 5.796610169491525, 1.3553500660501983, 13.864864864864865, 5.4866310160427805, 34.2, 14.25, 3.320388349514563, 1.0, 22.8, 12.36144578313253, 3.1666666666666665, 14.869565217391305, 10.46938775510204, 6.2560975609756095]
+        weights = [6, 1, 20, 1, 1, 1, 10, 1, 30, 10, 1, 1.0, 20, 10, 1, 10, 10, 1.5]
+        weights = weights / max(weights)
         class_weights = torch.FloatTensor(weights).cuda()
         print_log(logger, "Use weighted loss")
-    critical  = nn.BCEWithLogitsLoss(weight=class_weights)
-    # optimizer = optimizer = optim.Adam(
-    #                     filter(lambda p: p.requires_grad, model.parameters()),
-    #                     lr=args.lr,
-    #                 )
+    critical  = nn.BCEWithLogitsLoss(weight=class_weights, reduction="sum")
+ 
     optimizer = torch.optim.Adam(model.parameters(), args.lr)
 
     f1_scores = MultilabelF1Score(num_labels=len(genre_all), threshold=args.threshold)
