@@ -115,7 +115,9 @@ def train(args, logger):
         print_log(logger, "Use weighted loss")
     critical  = nn.BCEWithLogitsLoss(weight=class_weights, reduction="sum")
  
-    optimizer = torch.optim.Adam(model.parameters(), args.lr)
+    optimizer = torch.optim.Adam(    
+        filter(lambda p: p.requires_grad, model.parameters()),
+        args.lr)
 
     f1_scores = MultilabelF1Score(num_labels=len(genre_all), threshold=args.threshold)
     f1_scores = f1_scores.to(device)

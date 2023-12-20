@@ -22,6 +22,9 @@ class Model(nn.Module):
         self.img_model = models.vgg16(pretrained)
         for param in self.img_model.parameters():
             param.requires_grad = False
+
+        self.img_model.classifier.requires_grad = True
+    
         self.linear = nn.Linear(1000, num_class)
         
         
