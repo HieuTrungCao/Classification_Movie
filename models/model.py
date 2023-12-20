@@ -20,6 +20,8 @@ class Model(nn.Module):
         # else:
             # self.img_model = ImgModel(num_class)
         self.img_model = models.vgg16(pretrained)
+        for param in self.img_model.parameters():
+            param.requires_grad = False
         self.linear = nn.Linear(1000, num_class)
         
         
