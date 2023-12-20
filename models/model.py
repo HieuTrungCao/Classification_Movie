@@ -10,7 +10,7 @@ class Model(nn.Module):
     def __init__(self, num_class, pretrained, hidden_state_img = 512, use_title=False, hidden_state_title = None):
         super(Model, self).__init__()
 
-        # self.use_title = use_title
+        self.use_title = use_title
         # if use_title:
         #     self.img_model = ImgModel(hidden_state_img)
         #     self.input_dim = hidden_state_img
