@@ -171,24 +171,25 @@ def train(args, logger):
         l = 0
         a = 0
         model.eval()
-        for i, (img, title, genre) in enumerate(valid_dataloader):
-            
-            img = img.to(device)
-            if args.use_title:
-                title = title.to(device)
-            genre = genre.to(device)
+        with torch.no_grad():
+            for i, (img, title, genre) in enumerate(valid_dataloader):
+                
+                img = img.to(device)
+                if args.use_title:
+                    title = title.to(device)
+                genre = genre.to(device)
 
-            out = model(img, title)
-            loss = criterion(out, genre)
-            f1 = f1_scores(out, genre)
-            _p = precision_scores(out, genre)
-            r = recall_scores(out, genre)
-            _a = accuracy(out, genre)
-            f += f1
-            p += _p
-            r += r
-            a += _a
-            l += loss.item()
+                out = model(img, title)
+                loss = criterion(out, genre)
+                f1 = f1_scores(torch.sigmoid(out), genre)
+                _p = precision_scores(torch.sigmoid(out), genre)
+                r = recall_scores(torch.sigmoid(out), genre)
+                _a = accuracy(torch.sigmoid(out), genre)
+                f += f1
+                p += _p
+                r += r
+                a += _a
+                l += loss.item()
 
         print_log(logger, "|[VALID] epoch : {:5d}| time: {:8.2f}s| loss: {:8.3f}| acc: {:5.3f}| precission: {:5.3f}| recall: {:5.3f}| f1_score: {:5.3f}|".format(
                     e, time.time() - t_v, l / len(valid_dataloader), a / len(valid_dataloader), p / len(valid_dataloader), r / len(valid_dataloader), f / len(valid_dataloader) 
@@ -234,11 +235,11 @@ if __name__ == "__main__":
     parse.add_argument("--embedding_dim", type=int, default=256)
     args = parse.parse_args()
     
-    np.random.seed(args.seed)
-    random.seed(args.seed)
-    torch.manual_seed(args.seed)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed(args.seed)
+    # np.random.seed(args.seed)
+    # random.seed(args.seed)
+    # torch.manual_seed(args.seed)
+    # if torch.cuda.is_available():
+    #     torch.cuda.manual_seed(args.seed)
         
     # 1. Start a W&B Run
     wandb.login()
