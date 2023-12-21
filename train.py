@@ -122,7 +122,7 @@ def train(args, logger):
         class_weights = torch.FloatTensor(weights).cuda()
         class_weights = class_weights / max(class_weights)
         print_log(logger, "Use weighted loss")
-    criterion  = nn.CrossEntropyLoss(weight=class_weights, reduction="sum")
+    criterion  = nn.CrossEntropyLoss(weight=class_weights)
  
     optimizer = torch.optim.Adam(    
         filter(lambda p: p.requires_grad, model.parameters()),
@@ -153,6 +153,9 @@ def train(args, logger):
             loss = criterion(out, genre)
             optimizer.zero_grad()
             loss.backward()
+
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 5)
+
             optimizer.step()
             l += loss.item()
             if i % args.iter_print == 0 and i > 0:
@@ -182,10 +185,10 @@ def train(args, logger):
 
                 out = model(img, title)
                 loss = criterion(out, genre)
-                f1 = f1_scores(torch.sigmoid(out), genre)
-                _p = precision_scores(torch.sigmoid(out), genre)
-                r = recall_scores(torch.sigmoid(out), genre)
-                _a = accuracy(torch.sigmoid(out), genre)
+                f1 = f1_scores(out, genre)
+                _p = precision_scores(out, genre)
+                r = recall_scores(out, genre)
+                _a = accuracy(out, genre)
                 f += f1
                 p += _p
                 r += r
