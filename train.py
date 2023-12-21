@@ -182,7 +182,7 @@ def train(args, logger):
         print_log(logger, "|[TRAIN] epoch : {:5d}| acc: {:5.3f}| precission: {:5.3f}| recall: {:5.3f}| f1_score: {:5.3f}|".format(
             e, a_t / len(train_dataloader), p_t / len(train_dataloader), r_t / len(train_dataloader), f_t / len(train_dataloader)
         ))
-        
+
         lr = reduce_Lr(optimizer, args.is_reduce_lr)
         wandb.log({"Lr": lr})
         
@@ -202,6 +202,7 @@ def train(args, logger):
                 genre = genre.to(device)
 
                 out = model(img, title)
+                print("out: ", out)
                 loss = criterion(out, genre)
                 f1 = f1_scores(out, genre)
                 _p = precision_scores(out, genre)
