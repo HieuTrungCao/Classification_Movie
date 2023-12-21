@@ -8,6 +8,9 @@ class Model(nn.Module):
     super(Model, self).__init__()
     self.img_model = models.vgg16(pretrained)
 
+    for param in self.img_model.features.parameters():
+      param.requires_grad = False
+
     self.embed = nn.Embedding(vocab_size, embedding_dim)
     self.lstm = nn.LSTM(input_size=embedding_dim, hidden_size=hidden_dim, num_layers=num_layers, batch_first=True)
     self.fc_lstm = nn.Linear(hidden_dim, 128)
@@ -19,7 +22,7 @@ class Model(nn.Module):
 
   def forward(self, image_tensor, title_tensor):
     cnn = self.img_model(image_tensor)
-    
+
     lstm = self.embed(title_tensor)
     lstm, (hidden, cell) = self.lstm(lstm)
     lstm_out = self.fc_lstm(hidden[-1])
