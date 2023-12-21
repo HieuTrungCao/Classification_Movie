@@ -75,10 +75,15 @@ def train(args, logger):
     Model
     """
     print_log(logger, "Loading model")
-    model  = Model(len(genre2idx), pretrained=args.pretrained, 
-                   hidden_state_title=args.hidden_state_title,
-                   num_layers=args.num_layers, embedding_dim=args.embedding_dim, 
-                   vocab_size=train_datasets.vocab.size(), use_title=args.use_title)
+    # model  = Model(len(genre2idx), pretrained=args.pretrained, 
+    #                hidden_state_title=args.hidden_state_title,
+    #                num_layers=args.num_layers, embedding_dim=args.embedding_dim, 
+    #                vocab_size=train_datasets.vocab.size(), use_title=args.use_title)
+    model = Model(vocab_size=train_datasets.vocab.size(),
+                  embedding_dim=args.embedding_dim,
+                  hidden_dim=args.hidden_state_title,
+                  num_layers=args.num_layers,
+                  num_classes=len(genre_all))
     # model.to(device)
     if args.pretrained:
         print_log(logger, "Use pretrained")
