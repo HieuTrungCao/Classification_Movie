@@ -127,7 +127,7 @@ def train(args, logger):
     recall_scores = recall_scores.to(device)
     precision_scores = MultilabelPrecision(num_labels=len(genre_all), threshold=args.threshold)
     precision_scores = precision_scores.to(device)
-    accuracy = MultilabelAccuracy(num_classes=len(genre_all), threshold=args.threshold)
+    accuracy = MultilabelAccuracy(num_labels=len(genre_all), threshold=args.threshold)
 
     print_log(logger, "Training...........")
     for e in range(start_epoch, args.epoch + 1):
