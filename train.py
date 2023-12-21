@@ -58,9 +58,9 @@ def train(args, logger):
     movies_train = pd.concat([movies_train, movies_valid], axis=0)
     movies_valid = movies_test
 
-    train_datasets = MyDataset(movies_train, genre2idx)
-    valid_datasets = MyDataset(movies_valid, genre2idx)
-    test_datasets = MyDataset(movies_test, genre2idx)
+    train_datasets = MyDataset(movies_train, genre2idx, max_length=args.max_length, get_year=args.get_year)
+    valid_datasets = MyDataset(movies_valid, genre2idx, max_length=args.max_length, get_year=args.get_year)
+    test_datasets = MyDataset(movies_test, genre2idx, max_length=args.max_length, get_year=args.get_year)
 
     train_dataloader = DataLoader(train_datasets, batch_size=args.batch_size, shuffle=True)
     valid_dataloader = DataLoader(valid_datasets, batch_size=args.batch_size_valid, shuffle=True)
@@ -75,7 +75,9 @@ def train(args, logger):
     Model
     """
     print_log(logger, "Loading model")
-    model  = Model(len(genre2idx), use_title=args.use_title, pretrained=args.pretrained)
+    model  = Model(len(genre2idx), use_title=args.use_title, pretrained=args.pretrained, 
+                   hidden_state_title=args.hidden_state_title, title_length=args.max_length,
+                   num_layers=args.num_layers)
     # model.to(device)
     if args.pretrained:
         print_log(logger, "Use pretrained")
@@ -212,8 +214,12 @@ if __name__ == "__main__":
     parse.add_argument("--notes", type=str, default="My first experiment")
     parse.add_argument("--momentum", type=float, default=0.9)
     parse.add_argument("--decay", type=float, default=0.0005)
-    parse.add_argument("--pretrained", type=bool, default=True)
+    parse.add_argument("--pretrained", type=bool, default=False)
     parse.add_argument("--weighted", type=bool, default=False)
+    parse.add_argument("--max_length", type=int, default=8)
+    parse.add_argument("--num_layers", type=int, default=1)
+    parse.add_argument("--get_year", type=bool, default=False)
+    parse.add_argument("--hidden_state_title", type=int, default=128)
     args = parse.parse_args()
     
     np.random.seed(args.seed)
