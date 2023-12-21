@@ -39,7 +39,7 @@ class MyDataset(Dataset):
             genre_vector[self.genre2idx[g]] = 1
         genre_tensor = torch.from_numpy(genre_vector).float()
 
-        title_tensor = torch.tensor(self.vocab.word_encode(title))
+        title_tensor = torch.tensor(self.vocab.word_encode(title), dtype=torch.int)
 
         return img_tensor, title_tensor, genre_tensor
  
