@@ -1,5 +1,7 @@
 import nltk
 
+nltk.download('punkt')
+
 class Vocab:
     def __init__(self, max_length, data, get_year):
         self.max_length = max_length
@@ -9,6 +11,7 @@ class Vocab:
         self.build_vocab()
 
     def build_vocab(self):
+        
         set_key = [v for title in self.data for v in nltk.word_tokenize(title)]
         set_key = set(set_key)
         self.vocab["sos"] = 0
