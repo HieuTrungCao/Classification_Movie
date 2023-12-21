@@ -205,11 +205,11 @@ def train(args, logger):
                 loss = criterion(out, genre)
                 f1 = f1_scores(out, genre)
                 _p = precision_scores(out, genre)
-                r = recall_scores(out, genre)
+                _r = recall_scores(out, genre)
                 _a = accuracy(out, genre)
                 f += f1
                 p += _p
-                r += r
+                r += _r
                 a += _a
                 l += loss.item()
 
