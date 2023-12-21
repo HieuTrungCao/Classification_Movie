@@ -5,3 +5,6 @@ __pycache__
 result.csv
 test_metric.py
 visualize_data/
+Cấu trúc để phân tích dữ liệu.txt
+analytic_result.py
+result.csv

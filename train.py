@@ -83,7 +83,8 @@ def train(args, logger):
                   embedding_dim=args.embedding_dim,
                   hidden_dim=args.hidden_state_title,
                   num_layers=args.num_layers,
-                  num_classes=len(genre_all))
+                  num_classes=len(genre_all),
+                  pretrained=args.pretrained)
     # model.to(device)
     if args.pretrained:
         print_log(logger, "Use pretrained")
