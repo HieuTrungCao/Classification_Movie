@@ -14,7 +14,7 @@ from datetime import datetime
 from torch.utils.data import DataLoader
 from torch import optim
 import torchvision.transforms as transforms
-from torchmetrics.classification import MultilabelF1Score, MultilabelRecall, MultilabelPrecision
+from torchmetrics.classification import MultilabelF1Score, MultilabelRecall, MultilabelPrecision, MulticlassAccuracy
 
 # from src.models.retnet import Retnet
 from models import Model
@@ -127,7 +127,8 @@ def train(args, logger):
     recall_scores = recall_scores.to(device)
     precision_scores = MultilabelPrecision(num_labels=len(genre_all), threshold=args.threshold)
     precision_scores = precision_scores.to(device)
-    
+    accuracy = MulticlassAccuracy(num_classes=len(genre_all), threshold=args.threshold)
+
     print_log(logger, "Training...........")
     for e in range(start_epoch, args.epoch + 1):
         model.train()
@@ -161,7 +162,7 @@ def train(args, logger):
         r = 0
         f = 0
         l = 0
-
+        a = 0
         model.eval()
         for i, (img, title, genre) in enumerate(valid_dataloader):
             
@@ -175,13 +176,15 @@ def train(args, logger):
             f1 = f1_scores(out, genre).item()
             _p = precision_scores(out, genre).item()
             r = recall_scores(out, genre).item()
+            _a = accuracy(out, genre).item()
             f += f1
             p += _p
             r += r
+            a += _a
             l += loss.item()
 
-        print_log(logger, "|[VALID] epoch : {:5d}| time: {:8.2f}s| loss: {:8.3f}| precission: {:5.3f}| recall: {:5.3f}| f1_score: {:5.3f}|".format(
-                    e, time.time() - t_v, l / len(valid_dataloader), p / len(valid_dataloader), r / len(valid_dataloader), f / len(valid_dataloader) 
+        print_log(logger, "|[VALID] epoch : {:5d}| time: {:8.2f}s| loss: {:8.3f}| acc: {:5.3f}| precission: {:5.3f}| recall: {:5.3f}| f1_score: {:5.3f}|".format(
+                    e, time.time() - t_v, l / len(valid_dataloader), a / len(valid_dataloader), p / len(valid_dataloader), r / len(valid_dataloader), f / len(valid_dataloader) 
                 ))
         
         wandb.log({"valid loss": l/len(valid_dataloader)})
