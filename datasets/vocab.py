@@ -36,3 +36,5 @@ class Vocab:
             s.append(self.vocab["pad"])
 
         return s  
+    def size(self):
+        return len(self.vocab)

@@ -7,15 +7,15 @@ from .resnet import resnet50
 from .img_model import ImgModel
 
 class Model(nn.Module):
-    def __init__(self, num_class, pretrained, title_length, num_layers, hidden_state_img = 512, use_title=False, hidden_state_title = None):
+    def __init__(self, num_class, pretrained, num_layers, vocab_size, hidden_state_img = 512, use_title=False, hidden_state_title = None, embedding_dim=256):
         super(Model, self).__init__()
 
         self.use_title = use_title
         if use_title:
             self.img_model = models.vgg16(pretrained)
             self.input_dim = hidden_state_title + 1000
-            self.text_model = nn.LSTM(title_length, hidden_state_title, num_layers, batch_first=True)
-            self.input_dim += hidden_state_title
+            self.embed = nn.Embedding(vocab_size, embedding_dim)
+            self.text_model = nn.LSTM(embedding_dim, hidden_state_title, num_layers, batch_first=True)
             self.linear = nn.Linear(self.input_dim, num_class)
         else:
         
@@ -36,7 +36,9 @@ class Model(nn.Module):
             return out        
 
         out = self.img_model(img)
-        t = self.text_model(title)
-        out = torch.cat((out, t), dim = 1)
+
+        t = self.embed(title)
+        lstm, (t, cell) = self.text_model(t)
+        out = torch.concat([out, t[-1]], dim = 1)
         out = self.linear(out)
         return out

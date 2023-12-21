@@ -75,9 +75,10 @@ def train(args, logger):
     Model
     """
     print_log(logger, "Loading model")
-    model  = Model(len(genre2idx), use_title=args.use_title, pretrained=args.pretrained, 
+    model  = Model(len(genre2idx), pretrained=args.pretrained, 
                    hidden_state_title=args.hidden_state_title, title_length=args.max_length,
-                   num_layers=args.num_layers)
+                   num_layers=args.num_layers, embedding_dim=args.embedding_dim, 
+                   vocab=train_datasets.vocab.size())
     # model.to(device)
     if args.pretrained:
         print_log(logger, "Use pretrained")
@@ -224,6 +225,7 @@ if __name__ == "__main__":
     parse.add_argument("--num_layers", type=int, default=1)
     parse.add_argument("--get_year", type=bool, default=False)
     parse.add_argument("--hidden_state_title", type=int, default=128)
+    parse.add_argument("--embedding_dim", type=int, default=256)
     args = parse.parse_args()
     
     np.random.seed(args.seed)
