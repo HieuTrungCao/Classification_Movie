@@ -1,2 +1,2 @@
 # from retnet import Retnet
-from .model import Model, ImgModel
+from .model import Model
