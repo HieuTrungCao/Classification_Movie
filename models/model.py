@@ -37,6 +37,6 @@ class Model(nn.Module):
 
         out = self.img_model(img)
         t = self.text_model(title)
-        out = torch.concatenate((out, t), dim = 1)
+        out = torch.cat((out, t), dim = 1)
         out = self.linear(out)
         return out
