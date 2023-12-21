@@ -76,7 +76,7 @@ def train(args, logger):
     """
     print_log(logger, "Loading model")
     model  = Model(len(genre2idx), pretrained=args.pretrained, 
-                   hidden_state_title=args.hidden_state_title, title_length=args.max_length,
+                   hidden_state_title=args.hidden_state_title,
                    num_layers=args.num_layers, embedding_dim=args.embedding_dim, 
                    vocab=train_datasets.vocab.size())
     # model.to(device)
