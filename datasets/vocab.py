@@ -1,6 +1,5 @@
-import nltk
+from nltk import wordpunct_tokenize
 
-nltk.download('punkt')
 
 class Vocab:
     def __init__(self, max_length, data, get_year):
@@ -12,7 +11,7 @@ class Vocab:
 
     def build_vocab(self):
         
-        set_key = [v for title in self.data for v in nltk.word_tokenize(title)]
+        set_key = [v for title in self.data for v in wordpunct_tokenize(title.lower())]
         set_key = set(set_key)
         self.vocab["sos"] = 0
         self.vocab["pad"] = 1
@@ -21,7 +20,7 @@ class Vocab:
             self.vocab[v.lower()] = 3 + i
 
     def word_encode(self, text):
-        ws = nltk.word_tokenize(text)
+        ws = wordpunct_tokenize(text.lower())
         s = [0]
         for w in ws:
             if not self.get_year and w.is_digit():
