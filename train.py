@@ -142,6 +142,12 @@ def train(args, logger):
         model.train()
         t_i = time.time()
         l = 0
+        
+        p_t = 0
+        r_t = 0
+        f_t = 0
+        a_t = 0
+
         for i, (img, title, genre) in enumerate(train_dataloader):
             
             img = img.to(device)
@@ -158,13 +164,25 @@ def train(args, logger):
 
             optimizer.step()
             l += loss.item()
+            f1 = f1_scores(out, genre)
+            _p = precision_scores(out, genre)
+            r = recall_scores(out, genre)
+            _a = accuracy(out, genre)
+            f_t += f1
+            p_t += _p
+            r_t += r
+            a_t += _a
+            
             if i % args.iter_print == 0 and i > 0:
                 print_log(logger, "|[TRAIN] epoch : {:5d}| {:5d}/{:5d} batches| time: {:8.2f}s| loss: {:8.3f}|".format(
                     e, i, len(train_dataloader), time.time() - t_i, loss.item()
                 ))
                 t_i = time.time()
         wandb.log({"train loss": l/len(train_dataloader)})
-
+        print_log(logger, "|[TRAIN] epoch : {:5d}| acc: {:5.3f}| precission: {:5.3f}| recall: {:5.3f}| f1_score: {:5.3f}|".format(
+            e, a_t / len(train_dataloader), p_t / len(train_dataloader), r_t / len(train_dataloader), f_t / len(train_dataloader)
+        ))
+        
         lr = reduce_Lr(optimizer, args.is_reduce_lr)
         wandb.log({"Lr": lr})
         
