@@ -78,7 +78,7 @@ def train(args, logger):
     model  = Model(len(genre2idx), pretrained=args.pretrained, 
                    hidden_state_title=args.hidden_state_title,
                    num_layers=args.num_layers, embedding_dim=args.embedding_dim, 
-                   vocab_size=train_datasets.vocab.size())
+                   vocab_size=train_datasets.vocab.size(), use_title=args.use_title)
     # model.to(device)
     if args.pretrained:
         print_log(logger, "Use pretrained")
