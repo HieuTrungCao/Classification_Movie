@@ -121,7 +121,7 @@ def train(args, logger):
         class_weights = torch.FloatTensor(weights).cuda()
         class_weights = class_weights / max(class_weights)
         print_log(logger, "Use weighted loss")
-    critical  = nn.BCEWithLogitsLoss(weight=class_weights, reduction="sum")
+    criterion  = nn.BCEWithLogitsLoss(weight=class_weights, reduction="sum")
  
     optimizer = torch.optim.Adam(    
         filter(lambda p: p.requires_grad, model.parameters()),
@@ -149,7 +149,7 @@ def train(args, logger):
             genre = genre.to(device)
 
             out = model(img, title)
-            loss = critical(out, genre)
+            loss = criterion(out, genre)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -179,11 +179,11 @@ def train(args, logger):
             genre = genre.to(device)
 
             out = model(img, title)
-            loss = critical(out, genre)
-            f1 = f1_scores(out, genre).item()
-            _p = precision_scores(out, genre).item()
-            r = recall_scores(out, genre).item()
-            _a = accuracy(out, genre).item()
+            loss = criterion(out, genre)
+            f1 = f1_scores(out, genre)
+            _p = precision_scores(out, genre)
+            r = recall_scores(out, genre)
+            _a = accuracy(out, genre)
             f += f1
             p += _p
             r += r
