@@ -191,6 +191,7 @@ def train(args, logger):
         wandb.log({"precission": p / len(valid_dataloader)})
         wandb.log({"recal": r / len(valid_dataloader)})
         wandb.log({"f1_score": f / len(valid_dataloader)})
+        wandb.log({"accuracy": a / len(valid_dataloader)})
         
         save_path = "epoch_" + str(e)
         torch.save({
