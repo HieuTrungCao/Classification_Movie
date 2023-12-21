@@ -202,7 +202,6 @@ def train(args, logger):
                 genre = genre.to(device)
 
                 out = model(img, title)
-                print("out: ", out)
                 loss = criterion(out, genre)
                 f1 = f1_scores(out, genre)
                 _p = precision_scores(out, genre)
