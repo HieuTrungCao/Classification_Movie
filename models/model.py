@@ -46,9 +46,9 @@ import torch.nn as nn
 import torch
 import torch.nn.functional as F
 
-class ModelVip(nn.Module):
+class Model(nn.Module):
   def __init__(self, vocab_size, embedding_dim, hidden_dim, num_layers, num_classes):
-    super(ModelVip, self).__init__()
+    super(Model, self).__init__()
     self.conv1 = nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1)
     self.pool = nn.MaxPool2d(4, 4)
     self.conv2 = nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1)
