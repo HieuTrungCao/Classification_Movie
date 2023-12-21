@@ -37,8 +37,8 @@ class Model(nn.Module):
 
         out = self.img_model(img)
 
-        t = self.embed(title)
-        lstm, (t, cell) = self.text_model(t)
+        t_e = self.embed(title)
+        lstm, (t, cell) = self.text_model(t_e)
         out = torch.concat([out, t[-1]], dim = 1)
         out = self.linear(out)
         return out
