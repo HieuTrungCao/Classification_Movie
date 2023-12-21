@@ -55,15 +55,15 @@ def train(args, logger):
     movies_train = get_dataframe(os.path.join(args.path_data, "movies_train.csv"))
     movies_valid = get_dataframe(os.path.join(args.path_data, "movies_valid.csv"))
     movies_test = get_dataframe(os.path.join(args.path_data, "movies_test.csv"))
-    movies_train = pd.concat([movies_train, movies_valid, movies_test], axis=0)
-    movies_valid = movies_test
+    # movies_train = pd.concat([movies_train], axis=0)
+    # movies_valid = movies_test
 
     train_datasets = MyDataset(movies_train, genre2idx, max_length=args.max_length, get_year=args.get_year)
     valid_datasets = MyDataset(movies_valid, genre2idx, max_length=args.max_length, get_year=args.get_year)
     test_datasets = MyDataset(movies_test, genre2idx, max_length=args.max_length, get_year=args.get_year)
 
     train_dataloader = DataLoader(train_datasets, batch_size=args.batch_size, shuffle=True)
-    valid_dataloader = DataLoader(valid_datasets, batch_size=args.batch_size_valid, shuffle=True)
+    valid_dataloader = DataLoader(valid_datasets, batch_size=args.batch_size_valid, shuffle=False)
     # test_dataloader = DataLoader(test_datasets, batch_size=args.batch_size)
     
     print_log(logger, "Loaded dataset!")
