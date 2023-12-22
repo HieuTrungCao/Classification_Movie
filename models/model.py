@@ -64,7 +64,7 @@ class ModelWithBert(nn.Module):
 
     self.dropout = nn.Dropout(p=0.1, inplace=False)
   
-    self.fc1 = nn.Linear(1128, 64)
+    self.fc1 = nn.Linear(1768, 64)
     self.fc2 = nn.Linear(64, num_classes)
 
   def forward(self, image_tensor, title_tensor):
