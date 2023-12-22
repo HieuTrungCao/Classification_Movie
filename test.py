@@ -67,7 +67,7 @@ def test(args):
                   pretrained=False)
     # model.to(device)
     i = args.model.find("_", -5, -1)
-    m = "epoch_" + args.model[ i: ]
+    m = "epoch" + args.model[ i: ]
     checkpoint = torch.load(os.path.join(args.model, m))
     model.load_state_dict(checkpoint['model_state_dict'])
 
