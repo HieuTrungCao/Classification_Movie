@@ -2,6 +2,7 @@ import torch.nn as nn
 import torch
 import torch.nn.functional as F
 import torchvision.models as models
+from transformers import AutoModel
 
 class Model(nn.Module):
   def __init__(self, vocab_size, embedding_dim, hidden_dim, num_layers, num_classes, pretrained):
@@ -38,4 +39,41 @@ class Model(nn.Module):
     out = F.relu(self.fc1(torch.concat([cnn, lstm_out], dim=1)))
     out = self.fc2(out)
 
+    return out
+  
+class ModelWithBert(nn.Module):
+  def __init__(self, num_classes, title_model):
+    super(Model, self).__init__()
+    # self.img_model = models.vgg16(pretrained)
+
+    # for param in self.img_model.features.parameters():
+    #   param.requires_grad = False
+
+    self.img_model = models.resnet50()
+
+    for param in self.img_model.parameters():
+      param.requires_grad = False
+
+    self.img_model.avgpool.requires_grad = True
+    self.img_model.fc.requires_grad = True
+
+    self.title_model = AutoModel.from_pretrained(title_model)
+
+    for param in self.title_model.parameters():
+      param.requires_grad = False
+
+    self.dropout = nn.Dropout(p=0.1, inplace=False)
+  
+    self.fc1 = nn.Linear(1128, 64)
+    self.fc2 = nn.Linear(64, num_classes)
+
+  def forward(self, image_tensor, title_tensor):
+    cnn = self.img_model(image_tensor)
+
+    title = self.title_model(input_ids = title_tensor["input_ids"], token_type_ids=title_tensor['token_type_ids'], attention_mask=title_tensor["attention_mask"])
+    title = self.dropout(title.last_hidden_state[:, 0, :])
+
+    out = self.fc1(torch.concat([cnn, title], dim=1))
+    out = F.relu(out)
+    out = self.fc2(out)
     return out

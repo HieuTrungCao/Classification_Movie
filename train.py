@@ -16,11 +16,12 @@ from torch.utils.data import DataLoader
 from torch import optim
 import torchvision.transforms as transforms
 from torchmetrics.classification import MultilabelF1Score, MultilabelRecall, MultilabelPrecision, MultilabelAccuracy
+from transformers import AutoTokenizer
 
 # from src.models.retnet import Retnet
-from models import Model
+from models import Model, ModelWithBert
 from datasets import get_dataframe
-from datasets import MyDataset
+from datasets import MyDataset, MultiDataset
 # from metrics import f1_scores
 from utils import print_log
 from datasets import Vocab
@@ -59,15 +60,22 @@ def train(args, logger):
     movies_test = get_dataframe(os.path.join(args.path_data, "movies_test.csv"))
     # movies_train = pd.concat([movies_train], axis=0)
     # movies_valid = movies_test
-    vocab = Vocab(args.max_length, data = movies_train.title.tolist(), get_year=args.get_year)
 
-    train_datasets = MyDataset(movies_train, genre2idx, get_year=args.get_year, vocab=vocab)
-    valid_datasets = MyDataset(movies_valid, genre2idx, get_year=args.get_year, vocab=vocab)
-    test_datasets = MyDataset(movies_test, genre2idx, get_year=args.get_year, vocab=vocab)
+    if args.nlp_model is None:
+        vocab = Vocab(args.max_length, data = movies_train.title.tolist(), get_year=args.get_year)
 
+        train_datasets = MyDataset(movies_train, genre2idx, get_year=args.get_year, vocab=vocab)
+        valid_datasets = MyDataset(movies_valid, genre2idx, get_year=args.get_year, vocab=vocab)
+        test_datasets = MyDataset(movies_test, genre2idx, get_year=args.get_year, vocab=vocab)
+    # test_dataloader = DataLoader(test_datasets, batch_size=args.batch_size)
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(args.nlp_model)
+        train_datasets = MultiDataset(movies_train, genre2idx, tokenizer)
+        valid_datasets = MultiDataset(movies_valid, genre2idx, tokenizer)
+        test_datasets = MultiDataset(movies_test, genre2idx, tokenizer)
+    
     train_dataloader = DataLoader(train_datasets, batch_size=args.batch_size, shuffle=True)
     valid_dataloader = DataLoader(valid_datasets, batch_size=args.batch_size_valid, shuffle=False)
-    # test_dataloader = DataLoader(test_datasets, batch_size=args.batch_size)
     
     print_log(logger, "Loaded dataset!")
     print_log(logger, "Training samples: {:5d}".format(len(train_datasets)))
@@ -82,12 +90,15 @@ def train(args, logger):
     #                hidden_state_title=args.hidden_state_title,
     #                num_layers=args.num_layers, embedding_dim=args.embedding_dim, 
     #                vocab_size=train_datasets.vocab.size(), use_title=args.use_title)
-    model = Model(vocab_size=train_datasets.vocab.size(),
-                  embedding_dim=args.embedding_dim,
-                  hidden_dim=args.hidden_state_title,
-                  num_layers=args.num_layers,
-                  num_classes=len(genre_all),
-                  pretrained=args.pretrained)
+    if args.nlp_model is None:
+        model = Model(vocab_size=train_datasets.vocab.size(),
+                    embedding_dim=args.embedding_dim,
+                    hidden_dim=args.hidden_state_title,
+                    num_layers=args.num_layers,
+                    num_classes=len(genre_all),
+                    pretrained=args.pretrained)
+    else:
+        model = ModelWithBert(num_classes=len(genre_all), title_model=args.nlp_model)
     # model.to(device)
     if args.pretrained:
         print_log(logger, "Use pretrained")
@@ -155,7 +166,12 @@ def train(args, logger):
             
             img = img.to(device)
             if args.use_title:
-                title = title.to(device)
+                if args.nlp_model:
+                    title["input_ids"] = title['input_ids'].to(device)
+                    title["attention_mask"] = title['attention_mask'].to(device)
+                    title["token_type_ids"] = title['token_type_ids'].to(device)
+                else:
+                    title = title.to(device)
             genre = genre.to(device)
 
             out = model(img, title)
@@ -201,7 +217,12 @@ def train(args, logger):
                 
                 img = img.to(device)
                 if args.use_title:
-                    title = title.to(device)
+                    if args.nlp_model:
+                        title["input_ids"] = title['input_ids'].to(device)
+                        title["attention_mask"] = title['attention_mask'].to(device)
+                        title["token_type_ids"] = title['token_type_ids'].to(device)
+                    else:
+                        title = title.to(device)
                 genre = genre.to(device)
 
                 out = model(img, title)
@@ -276,6 +297,7 @@ if __name__ == "__main__":
     parse.add_argument("--get_year", type=bool, default=False)
     parse.add_argument("--hidden_state_title", type=int, default=128)
     parse.add_argument("--embedding_dim", type=int, default=256)
+    parse.add_argument("--nlp_model", type=str, default=None)
     args = parse.parse_args()
     
     # np.random.seed(args.seed)
