@@ -74,7 +74,7 @@ class ModelWithBert(nn.Module):
     title = self.dropout(title.last_hidden_state[:, 0, :])
 
     # out = self.fc1(torch.concat([cnn, title], dim=1))
-    out = self.fc1(out)
+    out = self.fc1(title)
     out = F.relu(out)
     out = self.fc2(out)
     return out
