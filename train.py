@@ -284,7 +284,7 @@ if __name__ == "__main__":
     run = wandb.init(
         project="classification-movie",
         notes=args.notes,
-        tags=["baseline", "paper1"],
+        tags=["report"]
     )
     
     wandb.config = {"epochs": args.epoch, "learning_rate": args.lr, "batch_size": args.batch_size}
