@@ -125,7 +125,7 @@ def train(args, logger):
         class_weights = torch.FloatTensor(weights).cuda()
         class_weights = class_weights / max(class_weights)
         print_log(logger, "Use weighted loss")
-    criterion  = nn.CrossEntropyLoss(weight=class_weights)
+    criterion  = nn.BCEWithLogitsLoss(weight=class_weights)
  
     optimizer = torch.optim.Adam(    
         filter(lambda p: p.requires_grad, model.parameters()),
