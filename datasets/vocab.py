@@ -2,12 +2,15 @@ from nltk import wordpunct_tokenize
 
 
 class Vocab:
-    def __init__(self, max_length, data, get_year):
+    def __init__(self, max_length, get_year, vocab = None, data = None):
         self.max_length = max_length
         self.data = data
         self.vocab = {}
         self.get_year = get_year
-        self.build_vocab()
+        if self.data is not None:
+            self.build_vocab()
+        else:
+            self.vocab = vocab
 
     def build_vocab(self):
         
@@ -16,8 +19,9 @@ class Vocab:
         self.vocab["sos"] = 0
         self.vocab["pad"] = 1
         self.vocab["eos"] = 2
+        self.vocab["unk"] = 3
         for i, v in enumerate(set_key):
-            self.vocab[v.lower()] = 3 + i
+            self.vocab[v.lower()] = 4 + i
 
     def word_encode(self, text):
         ws = wordpunct_tokenize(text.lower())
@@ -27,7 +31,10 @@ class Vocab:
                 continue
 
             if w != "(" and w != ")":
-                s.append(self.vocab[w.lower()])
+                if w.lower in self.vocab.keys():
+                    s.append(self.vocab[w.lower()])
+                else:
+                    s.append(self.vocab["unk"])
 
         s.append(self.vocab["eos"])
 

@@ -9,6 +9,7 @@ import time
 import wandb
 import math
 import pandas as pd
+import json
 
 from datetime import datetime
 from torch.utils.data import DataLoader
@@ -22,6 +23,7 @@ from datasets import get_dataframe
 from datasets import MyDataset
 # from metrics import f1_scores
 from utils import print_log
+from datasets import Vocab
 
 def reduce_Lr(optimizer, is_reduce=False):
     # print(optimizer.param_groups)
@@ -57,10 +59,11 @@ def train(args, logger):
     movies_test = get_dataframe(os.path.join(args.path_data, "movies_test.csv"))
     # movies_train = pd.concat([movies_train], axis=0)
     # movies_valid = movies_test
+    vocab = Vocab(args.max_length, movies_train.title.tolist(), args.get_year)
 
-    train_datasets = MyDataset(movies_train, genre2idx, max_length=args.max_length, get_year=args.get_year)
-    valid_datasets = MyDataset(movies_valid, genre2idx, max_length=args.max_length, get_year=args.get_year)
-    test_datasets = MyDataset(movies_test, genre2idx, max_length=args.max_length, get_year=args.get_year)
+    train_datasets = MyDataset(movies_train, genre2idx, get_year=args.get_year, vocab=vocab)
+    valid_datasets = MyDataset(movies_valid, genre2idx, get_year=args.get_year, vocab=vocab)
+    test_datasets = MyDataset(movies_test, genre2idx, get_year=args.get_year, vocab=vocab)
 
     train_dataloader = DataLoader(train_datasets, batch_size=args.batch_size, shuffle=True)
     valid_dataloader = DataLoader(valid_datasets, batch_size=args.batch_size_valid, shuffle=False)
@@ -224,11 +227,24 @@ def train(args, logger):
         wandb.log({"accuracy": a / len(valid_dataloader)})
         
         save_path = "epoch_" + str(e)
+        save_forder = args.save_path + save_path
+        os.makedirs(save_forder)
         torch.save({
             'epoch': e,
             'model_state_dict': model.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
             }, os.path.join(args.save_path, save_path))
+        # Serializing json
+        vocab_object = json.dumps(train_datasets.vocab.vocab, indent=4)
+        
+        # Writing to sample.json
+        with open(os.path.join(save_forder, "vocab.json"), "w") as outfile:
+            outfile.write(vocab_object)
+
+        config = vars(args)
+        config_object = json.dumps(config, indent=4)
+        with open(os.path.join(config_object, "config.json"), "w") as outfile:
+            outfile.write(vocab_object)
 
 if __name__ == "__main__":
     

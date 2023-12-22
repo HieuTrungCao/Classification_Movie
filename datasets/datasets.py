@@ -8,13 +8,13 @@ from torch.utils.data import Dataset
 from .vocab import Vocab
 
 class MyDataset(Dataset):
-    def __init__(self, data, genre2idx, max_length, get_year = False):
+    def __init__(self, data, genre2idx, vocab, get_year = False):
         super(MyDataset, self).__init__()
         self.data = data
         self.genre2idx = genre2idx
         self.count = 0
         self.get_year = get_year
-        self.vocab = Vocab(max_length, self.data.title.tolist(), self.get_year)
+        self.vocab = vocab
     
     def __len__(self):
         return len(self.data)

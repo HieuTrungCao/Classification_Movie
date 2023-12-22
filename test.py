@@ -9,6 +9,7 @@ import torch
 import logging
 import time 
 import pandas as pd
+import json
 
 from datetime import datetime
 from torch.utils.data import DataLoader
@@ -22,7 +23,7 @@ from datasets import get_dataframe
 from datasets import MyDataset
 # from metrics import f1_scores
 from utils import print_log
-
+from datasets import Vocab
 
 def get_preds(preds, genres, outs, genre, threshold, genre_all):
     for o, g in zip(outs, genre):
@@ -49,15 +50,25 @@ def test(args):
     
     genre2idx = {genre:idx for idx, genre in enumerate(genre_all)}
 
-    movies_valid = get_dataframe(os.path.join(args.path_data, "movies_test.csv"))
+    config = json.load(open(os.path.join(args.model, "config.json")))
+    vocabs = json.load(open(os.path.join(args.model, "vocab.json")))
+    vocab = Vocab(config.max_length, get_year=config.get_year, vocab=vocabs)
 
-    test_datasets = MyDataset(movies_valid, genre2idx)
+    movies_test = get_dataframe(os.path.join(args.path_data, "movies_test.csv"))
+    
+    test_datasets = MyDataset(movies_test, genre2idx, get_year=config.get_year, vocab=vocab)
     test_dataloader = DataLoader(test_datasets, batch_size=args.batch_size)
 
-    model  = Model(len(genre2idx), use_title=args.use_title)
+    model = Model(vocab_size=len(vocabs),
+                  embedding_dim=config.embedding_dim,
+                  hidden_dim=config.hidden_state_title,
+                  num_layers=config.num_layers,
+                  num_classes=len(genre_all),
+                  pretrained=False)
     # model.to(device)
-        
-    checkpoint = torch.load(args.model)
+    i = args.model[-1]
+    m = "epoch_" + i
+    checkpoint = torch.load(os.path.join(args.model, m))
     model.load_state_dict(checkpoint['model_state_dict'])
 
     model.to(device)
@@ -89,10 +100,10 @@ def test(args):
         out = model(img, title)
         f1 = f1_scores(out, genre).item()
         _p = precision_scores(out, genre).item()
-        r = recall_scores(out, genre).item()
+        _r = recall_scores(out, genre).item()
         f += f1
         p += _p
-        r += r
+        r += _r
 
         get_preds(preds, genres, torch.sigmoid(out), genre, args.threshold, genre_all)
 
@@ -114,7 +125,6 @@ if __name__ == "__main__":
     parse.add_argument("--batch_size", type=int, default=16, help="Enter batch_size")
     parse.add_argument("--threshold", type=float, default=0.7, help="Enter threshold")
     parse.add_argument("--save_result", type=str, default="/content/result.csv")
-    parse.add_argument("--use_title", type=bool, default=False)
     
     args = parse.parse_args()
 
