@@ -52,17 +52,17 @@ def test(args):
 
     config = json.load(open(os.path.join(args.model, "config.json")))
     vocabs = json.load(open(os.path.join(args.model, "vocab.json")))
-    vocab = Vocab(config.max_length, get_year=config.get_year, vocab=vocabs)
+    vocab = Vocab(config["max_length"], get_year=config["get_year"], vocab=vocabs)
 
     movies_test = get_dataframe(os.path.join(args.path_data, "movies_test.csv"))
     
-    test_datasets = MyDataset(movies_test, genre2idx, get_year=config.get_year, vocab=vocab)
+    test_datasets = MyDataset(movies_test, genre2idx, get_year=config["get_year"], vocab=vocab)
     test_dataloader = DataLoader(test_datasets, batch_size=args.batch_size)
 
     model = Model(vocab_size=len(vocabs),
-                  embedding_dim=config.embedding_dim,
-                  hidden_dim=config.hidden_state_title,
-                  num_layers=config.num_layers,
+                  embedding_dim=config["embedding_dim"],
+                  hidden_dim=config["hidden_state_title"],
+                  num_layers=config["num_layers"],
                   num_classes=len(genre_all),
                   pretrained=False)
     # model.to(device)
