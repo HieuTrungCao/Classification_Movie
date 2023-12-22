@@ -69,8 +69,8 @@ class ModelWithBert(nn.Module):
 
   def forward(self, image_tensor, title_tensor):
     cnn = self.img_model(image_tensor)
-
-    title = self.title_model(input_ids = title_tensor["input_ids"], token_type_ids=title_tensor['token_type_ids'], attention_mask=title_tensor["attention_mask"])
+    # , token_type_ids=title_tensor['token_type_ids']
+    title = self.title_model(input_ids = title_tensor["input_ids"], attention_mask=title_tensor["attention_mask"])
     title = self.dropout(title.last_hidden_state[:, 0, :])
 
     out = self.fc1(torch.concat([cnn, title], dim=1))
