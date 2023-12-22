@@ -60,7 +60,6 @@ class MultiDataset(Dataset):
 
         # preprocess img
         img = cv2.imread(img_path)
-        self.count += 1
              
         img = cv2.resize(img, (224, 224))
         img_tensor = torch.from_numpy(img.transpose(2,0,1)).float()
