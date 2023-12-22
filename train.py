@@ -260,7 +260,7 @@ def train(args, logger):
             'model_state_dict': model.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
             }, os.path.join(save_forder, save_path))
-        if args.nlp_model is not None:
+        if args.nlp_model is None:
             # Serializing json
             vocab_object = json.dumps(train_datasets.vocab.vocab, indent=4)
             
