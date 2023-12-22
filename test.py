@@ -93,7 +93,7 @@ def test(args):
     for i, (img, title, genre) in enumerate(test_dataloader):
         
         img = img.to(device)
-        if args.use_title:
+        if config["use_title"]:
             title = title.to(device)
         genre = genre.to(device)
 
