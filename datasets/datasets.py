@@ -45,7 +45,7 @@ class MyDataset(Dataset):
  
 class MultiDataset(Dataset):
     def __init__(self, data, genre2idx, tokenizer):
-        super(MultiDataset, Dataset).__init__()
+        super(MultiDataset, self).__init__()
         self.data = data
         self.genre2idx = genre2idx
         self.tokenizer = tokenizer
