@@ -59,7 +59,7 @@ def train(args, logger):
     movies_test = get_dataframe(os.path.join(args.path_data, "movies_test.csv"))
     # movies_train = pd.concat([movies_train], axis=0)
     # movies_valid = movies_test
-    vocab = Vocab(args.max_length, movies_train.title.tolist(), args.get_year)
+    vocab = Vocab(args.max_length, data = movies_train.title.tolist(), get_year=args.get_year)
 
     train_datasets = MyDataset(movies_train, genre2idx, get_year=args.get_year, vocab=vocab)
     valid_datasets = MyDataset(movies_valid, genre2idx, get_year=args.get_year, vocab=vocab)
