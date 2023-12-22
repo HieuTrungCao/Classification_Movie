@@ -24,7 +24,7 @@ class Model(nn.Module):
     self.lstm = nn.LSTM(input_size=embedding_dim, hidden_size=hidden_dim, num_layers=num_layers, batch_first=True)
     self.fc_lstm = nn.Linear(hidden_dim, 128)
 
-    self.fc1 = nn.Linear(1128, 64)
+    self.fc1 = nn.Linear(1000, 64)
     self.fc2 = nn.Linear(64, num_classes)
 
     self.dropout = nn.Dropout(0.2)
@@ -32,11 +32,11 @@ class Model(nn.Module):
   def forward(self, image_tensor, title_tensor):
     cnn = self.img_model(image_tensor)
 
-    lstm = self.embed(title_tensor)
-    lstm, (hidden, cell) = self.lstm(lstm)
-    lstm_out = self.fc_lstm(hidden[-1])
+    # lstm = self.embed(title_tensor)
+    # lstm, (hidden, cell) = self.lstm(lstm)
+    # lstm_out = self.fc_lstm(hidden[-1])
 
-    out = F.relu(self.fc1(torch.concat([cnn, lstm_out], dim=1)))
+    out = F.relu(self.fc1(cnn))
     out = self.fc2(out)
 
     return out
@@ -64,17 +64,16 @@ class ModelWithBert(nn.Module):
 
     self.dropout = nn.Dropout(p=0.1, inplace=False)
   
-    self.fc1 = nn.Linear(768, 64)
+    self.fc1 = nn.Linear(1768, 64)
     self.fc2 = nn.Linear(64, num_classes)
 
   def forward(self, image_tensor, title_tensor):
-    # cnn = self.img_model(image_tensor)
+    cnn = self.img_model(image_tensor)
     # , token_type_ids=title_tensor['token_type_ids']
     title = self.title_model(input_ids = title_tensor["input_ids"], attention_mask=title_tensor["attention_mask"])
     title = self.dropout(title.last_hidden_state[:, 0, :])
 
-    # out = self.fc1(torch.concat([cnn, title], dim=1))
-    out = self.fc1(title)
+    out = self.fc1(torch.concat([cnn, title], dim=1))
     out = F.relu(out)
     out = self.fc2(out)
     return out

@@ -51,8 +51,10 @@ def test(args):
     genre2idx = {genre:idx for idx, genre in enumerate(genre_all)}
 
     config = json.load(open(os.path.join(args.model, "config.json")))
-    vocabs = json.load(open(os.path.join(args.model, "vocab.json")))
-    vocab = Vocab(config["max_length"], get_year=config["get_year"], vocab=vocabs)
+    vocab = None
+    if config["use_title"]:
+        vocabs = json.load(open(os.path.join(args.model, "vocab.json")))
+        vocab = Vocab(config["max_length"], get_year=config["get_year"], vocab=vocabs)
 
     movies_test = get_dataframe(os.path.join(args.path_data, "movies_test.csv"))
     

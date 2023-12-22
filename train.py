@@ -262,11 +262,12 @@ def train(args, logger):
             }, os.path.join(save_forder, save_path))
         if args.nlp_model is None:
             # Serializing json
-            vocab_object = json.dumps(train_datasets.vocab.vocab, indent=4)
+            if args.use_title:
+                vocab_object = json.dumps(train_datasets.vocab.vocab, indent=4)
             
-            # Writing to sample.json
-            with open(os.path.join(save_forder, "vocab.json"), "w") as outfile:
-                outfile.write(vocab_object)
+                # Writing to sample.json
+                with open(os.path.join(save_forder, "vocab.json"), "w") as outfile:
+                    outfile.write(vocab_object)
 
             config = vars(args)
             config_object = json.dumps(config, indent=4)
