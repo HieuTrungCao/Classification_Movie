@@ -27,7 +27,7 @@ class Vocab:
         ws = wordpunct_tokenize(text.lower())
         s = [0]
         for w in ws:
-            if not self.get_year and w.is_digit():
+            if not self.get_year and w.isdigit():
                 continue
 
             if w != "(" and w != ")":
