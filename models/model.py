@@ -59,8 +59,8 @@ class ModelWithBert(nn.Module):
 
     self.title_model = AutoModel.from_pretrained(title_model)
 
-    for param in self.title_model.parameters():
-      param.requires_grad = False
+    # for param in self.title_model.parameters():
+    #   param.requires_grad = False
 
     self.dropout = nn.Dropout(p=0.1, inplace=False)
   
