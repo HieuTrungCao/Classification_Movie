@@ -6,10 +6,18 @@ import torchvision.models as models
 class Model(nn.Module):
   def __init__(self, vocab_size, embedding_dim, hidden_dim, num_layers, num_classes, pretrained):
     super(Model, self).__init__()
-    self.img_model = models.vgg16(pretrained)
+    # self.img_model = models.vgg16(pretrained)
 
-    for param in self.img_model.features.parameters():
+    # for param in self.img_model.features.parameters():
+    #   param.requires_grad = False
+
+    self.img_model = models.resnet50()
+
+    for param in self.img_model.parameters():
       param.requires_grad = False
+
+    self.img_model.avgpool.requires_grad = True
+    self.img_model.fc.requires_grad = True
 
     self.embed = nn.Embedding(vocab_size, embedding_dim)
     self.lstm = nn.LSTM(input_size=embedding_dim, hidden_size=hidden_dim, num_layers=num_layers, batch_first=True)
