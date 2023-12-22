@@ -49,7 +49,8 @@ class MultiDataset(Dataset):
         self.data = data
         self.genre2idx = genre2idx
         self.tokenizer = tokenizer
-
+        self.max_len = 40
+        
     def __len__(self):
         return len(self.data)
 
