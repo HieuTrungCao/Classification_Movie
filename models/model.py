@@ -28,6 +28,6 @@ class Model(nn.Module):
     lstm_out = self.fc_lstm(hidden[-1])
 
     out = F.relu(self.fc1(torch.concat([cnn, lstm_out], dim=1)))
-    out = self.fc2(cnn)
+    out = self.fc2(out)
 
     return out
