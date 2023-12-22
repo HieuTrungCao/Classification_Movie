@@ -167,9 +167,9 @@ def train(args, logger):
             img = img.to(device)
             if args.use_title:
                 if args.nlp_model:
-                    title["input_ids"] = title['input_ids'].to(device)
-                    title["attention_mask"] = title['attention_mask'].to(device)
-                    title["token_type_ids"] = title['token_type_ids'].to(device)
+                    title["input_ids"] = title['input_ids'][:, 0, :].to(device)
+                    title["attention_mask"] = title['attention_mask'][:, 0, :].to(device)
+                    title["token_type_ids"] = title['token_type_ids'][:, 0, :].to(device)
                 else:
                     title = title.to(device)
             genre = genre.to(device)
@@ -218,9 +218,9 @@ def train(args, logger):
                 img = img.to(device)
                 if args.use_title:
                     if args.nlp_model:
-                        title["input_ids"] = title['input_ids'].to(device)
-                        title["attention_mask"] = title['attention_mask'].to(device)
-                        title["token_type_ids"] = title['token_type_ids'].to(device)
+                        title["input_ids"] = title['input_ids'][:, 0, :].to(device)
+                        title["attention_mask"] = title['attention_mask'][:, 0, :].to(device)
+                        title["token_type_ids"] = title['token_type_ids'][:, 0, :].to(device)
                     else:
                         title = title.to(device)
                 genre = genre.to(device)
