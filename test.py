@@ -15,7 +15,7 @@ from datetime import datetime
 from torch.utils.data import DataLoader
 from torch import optim
 import torchvision.transforms as transforms
-from torchmetrics.classification import MultilabelF1Score, MultilabelRecall, MultilabelPrecision
+from torchmetrics.classification import MultilabelF1Score, MultilabelRecall, MultilabelPrecision, MultilabelAccuracy
 
 # from src.models.retnet import Retnet
 from models import Model
@@ -81,10 +81,13 @@ def test(args):
     recall_scores = recall_scores.to(device)
     precision_scores = MultilabelPrecision(num_labels=len(genre_all), threshold=args.threshold)
     precision_scores = precision_scores.to(device)
+    accuracy = MultilabelAccuracy(num_labels=len(genre_all), threshold=args.threshold)
+    accuracy = accuracy.to(device)
 
     f = 0
     p = 0
     r = 0
+    a = 0
     t = time.time()
 
     preds = []
@@ -101,14 +104,16 @@ def test(args):
         f1 = f1_scores(out, genre).item()
         _p = precision_scores(out, genre).item()
         _r = recall_scores(out, genre).item()
+        _a = accuracy(out, genre).item()
         f += f1
         p += _p
         r += _r
+        a += _a
 
         get_preds(preds, genres, torch.sigmoid(out), genre, args.threshold, genre_all)
 
-    print("|[TEST]| time: {:8.2f}s| precission: {:5.3f}| recall: {:5.3f}| f1_score: {:5.3f}|".format(
-                    time.time() - t, p / len(test_dataloader), r / len(test_dataloader), f / len(test_dataloader) 
+    print("|[TEST]| time: {:8.2f}s| accuracy: {:5.3f}| precission: {:5.3f}| recall: {:5.3f}| f1_score: {:5.3f}|".format(
+                    time.time() - t, a / len(test_dataloader), p / len(test_dataloader), r / len(test_dataloader), f / len(test_dataloader) 
                 ))   
     result = pd.DataFrame({
         "preds": preds,
