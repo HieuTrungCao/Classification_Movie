@@ -43,7 +43,7 @@ class Model(nn.Module):
   
 class ModelWithBert(nn.Module):
   def __init__(self, num_classes, title_model):
-    super(Model, self).__init__()
+    super(ModelWithBert, self).__init__()
     # self.img_model = models.vgg16(pretrained)
 
     # for param in self.img_model.features.parameters():
