@@ -64,16 +64,17 @@ class ModelWithBert(nn.Module):
 
     self.dropout = nn.Dropout(p=0.1, inplace=False)
   
-    self.fc1 = nn.Linear(1768, 64)
+    self.fc1 = nn.Linear(768, 64)
     self.fc2 = nn.Linear(64, num_classes)
 
   def forward(self, image_tensor, title_tensor):
-    cnn = self.img_model(image_tensor)
+    # cnn = self.img_model(image_tensor)
     # , token_type_ids=title_tensor['token_type_ids']
     title = self.title_model(input_ids = title_tensor["input_ids"], attention_mask=title_tensor["attention_mask"])
     title = self.dropout(title.last_hidden_state[:, 0, :])
 
-    out = self.fc1(torch.concat([cnn, title], dim=1))
+    # out = self.fc1(torch.concat([cnn, title], dim=1))
+    out = self.fc1(out)
     out = F.relu(out)
     out = self.fc2(out)
     return out
