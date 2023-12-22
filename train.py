@@ -226,14 +226,19 @@ def train(args, logger):
         wandb.log({"f1_score": f / len(valid_dataloader)})
         wandb.log({"accuracy": a / len(valid_dataloader)})
         
+        if not os.path.exists(args.save_path):
+            os.makedirs(args.save_path)
+
         save_path = "epoch_" + str(e)
-        save_forder = args.save_path + save_path
-        os.makedirs(save_forder)
+        save_forder = args.save_path + "/" + save_path
+        if not os.path.exists(save_forder):
+            os.makedirs(save_forder)
+        
         torch.save({
             'epoch': e,
             'model_state_dict': model.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
-            }, os.path.join(args.save_path, save_path))
+            }, os.path.join(save_forder, save_path))
         # Serializing json
         vocab_object = json.dumps(train_datasets.vocab.vocab, indent=4)
         
@@ -243,8 +248,8 @@ def train(args, logger):
 
         config = vars(args)
         config_object = json.dumps(config, indent=4)
-        with open(os.path.join(config_object, "config.json"), "w") as outfile:
-            outfile.write(vocab_object)
+        with open(os.path.join(save_forder, "config.json"), "w") as outfile:
+            outfile.write(config_object)
 
 if __name__ == "__main__":
     
