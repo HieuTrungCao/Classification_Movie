@@ -1,3 +1,6 @@
 torch
 opencv-python
 numpy
+wandb 
+torchmetrics 
+transformers
