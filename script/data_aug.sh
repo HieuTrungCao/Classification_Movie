@@ -1,1 +1,1 @@
-python data_aug.py --path_data "data/dataset" --save_path "data/dataset"
+python data_aug.py --path_data "./data/dataset" --save_path "./data/dataset"
