@@ -49,9 +49,9 @@ def test(args):
             return_tensors='pt'
         )
     
-    title_tensor["input_ids"] = title_tensor['input_ids'][:, 0, :].to(device)
-    title_tensor["attention_mask"] = title_tensor['attention_mask'][:, 0, :].to(device)
-    title_tensor["token_type_ids"] = title_tensor['token_type_ids'][:, 0, :].to(device)
+    title_tensor["input_ids"] = title_tensor['input_ids'].to(device)
+    title_tensor["attention_mask"] = title_tensor['attention_mask'].to(device)
+    title_tensor["token_type_ids"] = title_tensor['token_type_ids'].to(device)
     
     out = model(img_tensor, title_tensor)
     
