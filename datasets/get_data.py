@@ -22,13 +22,16 @@ def get_data(path_root, mode="train"):
 def check(row):
   return not os.path.exists(row["img_path"])
  
-def get_dataframe(path):
+def get_dataframe(path, rm = False):
   data = pandas.read_csv(path)
   mask = data.apply(check, axis=1)
 
   # Remove rows based on the mask
   data = data.drop(data[mask].index)
 
+  if not rm:
+    return data
+  
   new_df = pandas.DataFrame(columns=["movieid", "title", "genre", "id", "img_path"])
   index = 0
   
