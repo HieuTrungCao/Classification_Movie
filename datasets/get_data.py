@@ -29,4 +29,31 @@ def get_dataframe(path):
   # Remove rows based on the mask
   data = data.drop(data[mask].index)
 
-  return data
+  new_df = pandas.DataFrame(columns=["movieid", "title", "genre", "id", "img_path"])
+  index = 0
+  
+  count_dra = 0
+  count_co = 0
+
+  for i in range(len(data)):
+    d = data.iloc[i]
+    m = d["movieid"]
+    t = d["title"]
+    g = d["genre"]
+    id = d["id"]
+    p = d["img_path"]
+
+    gs = g.split("|")
+
+    if len(gs) == 1:
+      if gs[0] == "Drama" and count_dra < 500:
+        count_dra += 1
+        continue
+      if gs[0] == "Comedy" and count_co < 300:
+        count_co += 1 
+        continue
+
+    new_df.loc[index] = [m, t, g, id, p]
+    index += 1
+
+  return new_df
