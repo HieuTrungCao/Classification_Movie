@@ -55,7 +55,7 @@ def train(args, logger):
     """
     print_log(logger, "Loading datasets!")
  
-    movies_train = get_dataframe(os.path.join(args.path_data, "movies_train.csv"), rm=True)
+    movies_train = get_dataframe(os.path.join(args.path_data, "movies_train_aug.csv"))
     movies_valid = get_dataframe(os.path.join(args.path_data, "movies_valid.csv"))
     movies_test = get_dataframe(os.path.join(args.path_data, "movies_test.csv"))
     # movies_train = pd.concat([movies_train], axis=0)
