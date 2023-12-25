@@ -78,10 +78,6 @@ def test(args):
     accuracy = MultilabelAccuracy(num_labels=len(genre_all), threshold=args.threshold)
     accuracy = accuracy.to(device)
 
-    f = 0
-    p = 0
-    r = 0
-    a = 0
     t = time.time()
 
     preds = []
@@ -96,17 +92,18 @@ def test(args):
         genre = genre.to(device)
 
         out = model(img, title)
-        f1 = f1_scores(out, genre)
-        _p = precision_scores(out, genre)
-        _r = recall_scores(out, genre)
-        _a = accuracy(out, genre)
-        f += f1
-        p += _p
-        r += _r
-        a += _a
+        f1_scores(out, genre)
+        precision_scores(out, genre)
+        recall_scores(out, genre)
+        accuracy(out, genre)
 
         get_preds(preds, genres, torch.sigmoid(out), genre, args.threshold, genre_all)
 
+    f = f1_scores.compute()
+    a = accuracy.compute()
+    p = precision_scores.compute()
+    r = recall_scores.compute()
+    
     print("|[TEST]| time: {:8.2f}s| accuracy: {:5.3f}| precission: {:5.3f}| recall: {:5.3f}| f1_score: {:5.3f}|".format(
                     time.time() - t, a / len(test_dataloader), p / len(test_dataloader), r / len(test_dataloader), f / len(test_dataloader) 
                 ))   
