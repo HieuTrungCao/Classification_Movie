@@ -25,6 +25,7 @@ from datasets import MyDataset, MultiDataset
 # from metrics import f1_scores
 from utils import print_log
 from datasets import Vocab
+from loss import AsymmetricLoss
 
 def reduce_Lr(optimizer, is_reduce=False):
     # print(optimizer.param_groups)
@@ -136,8 +137,9 @@ def train(args, logger):
         class_weights = torch.FloatTensor(weights).cuda()
         class_weights = class_weights / max(class_weights)
         print_log(logger, "Use weighted loss")
-    criterion  = nn.CrossEntropyLoss(weight=class_weights)
- 
+    # criterion  = nn.CrossEntropyLoss(weight=class_weights)
+    criterion = AsymmetricLoss()
+    
     optimizer = torch.optim.Adam(    
         filter(lambda p: p.requires_grad, model.parameters()),
         args.lr)
