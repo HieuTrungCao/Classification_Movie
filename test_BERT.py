@@ -96,10 +96,10 @@ def test(args):
         genre = genre.to(device)
 
         out = model(img, title)
-        f1 = f1_scores(out, genre).item()
-        _p = precision_scores(out, genre).item()
-        _r = recall_scores(out, genre).item()
-        _a = accuracy(out, genre).item()
+        f1 = f1_scores(out, genre)
+        _p = precision_scores(out, genre)
+        _r = recall_scores(out, genre)
+        _a = accuracy(out, genre)
         f += f1
         p += _p
         r += _r
