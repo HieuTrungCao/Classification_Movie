@@ -6,7 +6,14 @@ Chúng tôi, sử dụng data augmentation và đạt được kết quả tốt
 
 
 Để chạy phiên bản tốt nhất của chúng tôi.
-Đầu tiên chia data với câu lệnh dưới đây.
+
+Đầu tiên cài các môi trường cần sử dụng.
+
+```
+pip install requirement.txt
+```
+
+Tiếp theo, chia data với câu lệnh dưới đây.
 Chúng tôi lấy 20% sample trong tập train làm tập valid.
 
 ```

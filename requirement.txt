@@ -4,3 +4,4 @@ numpy
 wandb 
 torchmetrics 
 transformers
+nltk
